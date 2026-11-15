@@ -18,9 +18,6 @@ export const SITE = {
   cityPrepositional: 'в Архангельске',
   phone: '+7 (993) 193-91-93',
   phoneHref: 'tel:+79931939193',
-  // ВНИМАНИЕ: предположение — тот же номер в WhatsApp. Подтвердить у владельца.
-  whatsapp: 'https://wa.me/79931939193',
-  telegram: 'https://t.me/TODO',
   vk: 'https://vk.ru/club238903472',
   instagram: 'TODO',
   email: 'TODO',
@@ -59,7 +56,7 @@ export const REQUIRED_FIELDS = [
   'cityPrepositional',
   'phone',
   'phoneHref',
-  'whatsapp',
+  'vk',
   'address.street',
   'address.locality',
   'hours',
@@ -97,8 +94,6 @@ export const geoFilled = () => {
 /** Ссылки соцсетей, которые реально заполнены (для sameAs и футера). */
 export const socialLinks = (): { name: string; href: string }[] =>
   [
-    { name: 'WhatsApp', href: SITE.whatsapp },
-    { name: 'Telegram', href: SITE.telegram },
     { name: 'ВКонтакте', href: SITE.vk },
     { name: 'Instagram', href: SITE.instagram },
   ].filter((s) => !isTodo(s.href) && /^https?:\/\//.test(s.href) && !/0{10}/.test(s.href));
@@ -109,10 +104,6 @@ export const bookingHref = (): string => {
   return url && /^https?:\/\//.test(url) ? url : '/kontakty/#zapis';
 };
 export const bookingIsExternal = (): boolean => /^https?:\/\//.test(bookingHref());
-
-/** Ссылка WhatsApp с предзаполненным текстом. */
-export const whatsappLink = (text?: string): string =>
-  text ? `${SITE.whatsapp}?text=${encodeURIComponent(text)}` : SITE.whatsapp;
 
 export const DAY_NAMES: Record<DayCode, string> = {
   Mo: 'Пн', Tu: 'Вт', We: 'Ср', Th: 'Чт', Fr: 'Пт', Sa: 'Сб', Su: 'Вс',

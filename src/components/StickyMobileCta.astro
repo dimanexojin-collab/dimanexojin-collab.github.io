@@ -1,9 +1,9 @@
 ---
-import { SITE, bookingHref, whatsappLink } from '../config/site.ts';
+import { SITE, bookingHref } from '../config/site.ts';
 import Icon from './Icon.astro';
 ---
 <nav class="sticky-cta" aria-label="Быстрая связь">
   <a href={SITE.phoneHref}><Icon name="phone" /> Позвонить</a>
-  <a href={whatsappLink('Здравствуйте! Хочу записаться на процедуру.')} target="_blank" rel="noopener"><Icon name="whatsapp" /> WhatsApp</a>
+  <a href={SITE.vk} target="_blank" rel="noopener"><Icon name="vk" /> ВКонтакте</a>
   <a href={bookingHref()}><Icon name="calendar" /> Записаться</a>
 </nav>

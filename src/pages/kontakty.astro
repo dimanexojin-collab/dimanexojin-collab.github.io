@@ -10,7 +10,7 @@ const phone = phoneFilled();
 const title = fitTitle(`Контакты «${SITE.name}»: адрес, телефон${phone ? ` ${phone}` : ''}`, ', как добраться');
 const address = filled(SITE.address.street);
 const description = fitDescription(
-  `Контакты студии «${SITE.name}»${inCity()}${address ? `: ${address}` : ''}. Телефон, WhatsApp, Telegram, график работы и схема проезда. Запись на процедуры и консультацию.`,
+  `Контакты студии «${SITE.name}»${inCity()}${address ? `: ${address}` : ''}. Телефон, ВКонтакте, график работы и схема проезда. Запись на процедуры и консультацию.`,
 );
 const a = SITE.address;
 const hoursTodo = SITE.hours.some((h) => isTodo(h.open) || isTodo(h.close));

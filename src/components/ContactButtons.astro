@@ -1,5 +1,5 @@
 ---
-import { SITE, isTodo, whatsappLink } from '../config/site.ts';
+import { SITE, isTodo } from '../config/site.ts';
 import Icon from './Icon.astro';
 
 interface Props {
@@ -10,7 +10,6 @@ interface Props {
   class?: string;
 }
 const { message, phone = true, class: cls } = Astro.props;
-const tgTodo = isTodo(SITE.telegram);
 ---
 <div class:list={['contact-buttons', cls]}>
   {phone && (
@@ -18,10 +17,7 @@ const tgTodo = isTodo(SITE.telegram);
       <Icon name="phone" /> <span class:list={[{ todo: isTodo(SITE.phone) }]}>{SITE.phone}</span>
     </a>
   )}
-  <a class="btn contact-buttons__wa" href={whatsappLink(message)} target="_blank" rel="noopener">
-    <Icon name="whatsapp" /> WhatsApp
-  </a>
-  <a class:list={['btn contact-buttons__tg', { todo: tgTodo }]} href={SITE.telegram} target="_blank" rel="noopener">
-    <Icon name="telegram" /> Telegram
+  <a class="btn contact-buttons__vk" href={SITE.vk} target="_blank" rel="noopener">
+    <Icon name="vk" /> ВКонтакте
   </a>
 </div>

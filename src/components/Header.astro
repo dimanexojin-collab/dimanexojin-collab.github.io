@@ -1,7 +1,7 @@
 ---
 import { Picture } from 'astro:assets';
 import figure from '../assets/logo/figure.png';
-import { SITE, isTodo, bookingHref, whatsappLink } from '../config/site.ts';
+import { SITE, isTodo, bookingHref } from '../config/site.ts';
 import { mainNav, isActive } from '../lib/nav.ts';
 import Icon from './Icon.astro';
 import MobileNav from './MobileNav.astro';
@@ -40,8 +40,7 @@ const current = (href: string) => (path === href ? 'page' : isActive(href, path)
       <a class="header-contacts__phone" href={SITE.phoneHref}>
         <span class:list={[{ todo: isTodo(SITE.phone) }]}>{SITE.phone}</span>
       </a>
-      <a href={whatsappLink()} target="_blank" rel="noopener" aria-label="Написать в WhatsApp"><Icon name="whatsapp" /></a>
-      <a href={SITE.telegram} target="_blank" rel="noopener" aria-label="Написать в Telegram"><Icon name="telegram" /></a>
+      <a href={SITE.vk} target="_blank" rel="noopener" aria-label="Мы во ВКонтакте"><Icon name="vk" /></a>
       <a class="btn btn--primary" href={bookingHref()}>Записаться</a>
     </div>
 
