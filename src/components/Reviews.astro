@@ -1,0 +1,30 @@
+---
+/** Реальные отзывы из data/reviews.ts. При пустом списке компонент ничего не выводит. */
+import { reviews, type Review } from '../data/reviews.ts';
+
+interface Props {
+  items?: Review[];
+  title?: string;
+  limit?: number;
+}
+const { items = reviews, title = 'Отзывы клиентов', limit } = Astro.props;
+const list = limit ? items.slice(0, limit) : items;
+const fmt = new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+{list.length > 0 && (
+  <section class="reviews" aria-labelledby="reviews-title">
+    <h2 id="reviews-title">{title}</h2>
+    <div class="cards">
+      {list.map((r) => (
+        <article class="card review">
+          <blockquote class="review__text"><p>{r.text}</p></blockquote>
+          <p class="review__meta">
+            <strong>{r.author}</strong>,{' '}
+            <time datetime={r.date}>{fmt.format(new Date(r.date))}</time> ·{' '}
+            {r.sourceUrl ? <a href={r.sourceUrl} target="_blank" rel="noopener nofollow">{r.source}</a> : r.source}
+          </p>
+        </article>
+      ))}
+    </div>
+  </section>
+)}

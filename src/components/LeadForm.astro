@@ -1,0 +1,93 @@
+---
+/**
+ * Заявка на запись.
+ *  - SITE.formEndpoint задан → <form method="post" action=endpoint>; с JS отправка через fetch, без JS — обычный POST.
+ *  - endpoint пуст → вместо формы кнопки WhatsApp/Telegram с предзаполненным текстом.
+ * Поля: name, phone, service, consent (152-ФЗ), honeypot `website` (должно остаться пустым).
+ */
+import { SITE, filled } from '../config/site.ts';
+import { servicePages } from '../data/service-pages.ts';
+import { packages } from '../data/catalog.ts';
+import ContactButtons from './ContactButtons.astro';
+
+interface Props {
+  title?: string;
+  /** Предвыбранная услуга/курс (название из списка) */
+  service?: string;
+  id?: string;
+}
+const { title = 'Записаться на процедуру', service, id = 'zapis' } = Astro.props;
+const endpoint = filled(SITE.formEndpoint);
+const waText = `Здравствуйте! Хочу записаться${service ? `: ${service}` : ' на процедуру'}.`;
+---
+<section class="lead" id={id} aria-labelledby={`${id}-title`}>
+  <h2 id={`${id}-title`}>{title}</h2>
+  {endpoint ? (
+    <form class="lead-form" method="post" action={endpoint} data-lead-form novalidate>
+      <label>
+        <span>Имя</span>
+        <input type="text" name="name" autocomplete="given-name" required maxlength="80" />
+      </label>
+      <label>
+        <span>Телефон</span>
+        <input type="tel" name="phone" autocomplete="tel" inputmode="tel" required pattern="[+0-9()\-\s]{10,20}" placeholder="+7" />
+      </label>
+      <label>
+        <span>Услуга</span>
+        <select name="service">
+          <option value="">Не знаю, нужна консультация</option>
+          <optgroup label="Процедуры">
+            {servicePages.map((p) => <option selected={p.name === service}>{p.name}</option>)}
+          </optgroup>
+          <optgroup label="Комплексы и курсы">
+            {packages.map((p) => <option selected={p.name === service}>{p.name}</option>)}
+          </optgroup>
+        </select>
+      </label>
+      <div class="lead-form__hp" aria-hidden="true">
+        <label>Не заполняйте это поле <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+      </div>
+      <label class="checkbox">
+        <input type="checkbox" name="consent" value="yes" required />
+        <span>Я даю <a href="/soglasie/">согласие на обработку персональных данных</a> и ознакомлен(а) с <a href="/politika-konfidencialnosti/">политикой конфиденциальности</a></span>
+      </label>
+      <input type="hidden" name="page" value={Astro.url.pathname} />
+      <button type="submit" class="btn btn--primary">Отправить заявку</button>
+      <p class="lead-form__status" role="status" aria-live="polite" data-status></p>
+    </form>
+  ) : (
+    <div class="lead-fallback">
+      <p>Напишите нам в мессенджер — администратор подберёт удобное время и ответит на вопросы.</p>
+      <ContactButtons message={waText} />
+    </div>
+  )}
+</section>
+
+<script>
+  for (const form of document.querySelectorAll<HTMLFormElement>('[data-lead-form]')) {
+    const status = form.querySelector<HTMLElement>('[data-status]')!;
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!form.checkValidity()) {
+        status.textContent = 'Проверьте имя, телефон и согласие на обработку данных.';
+        form.reportValidity();
+        return;
+      }
+      const data = new FormData(form);
+      if (data.get('website')) return; // бот
+      const btn = form.querySelector<HTMLButtonElement>('[type=submit]')!;
+      btn.disabled = true;
+      status.textContent = 'Отправляем…';
+      try {
+        const res = await fetch(form.action, { method: 'POST', body: data, headers: { Accept: 'application/json' } });
+        if (!res.ok) throw new Error(String(res.status));
+        form.reset();
+        status.textContent = 'Спасибо! Мы свяжемся с вами в ближайшее время.';
+      } catch {
+        status.textContent = 'Не удалось отправить заявку. Позвоните нам или напишите в мессенджер.';
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  }
+</script>

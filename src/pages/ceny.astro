@@ -1,0 +1,39 @@
+---
+import Page from '../layouts/Page.astro';
+import PriceTabs from '../components/PriceTabs.astro';
+import PackageCard from '../components/PackageCard.astro';
+import { SITE, inCity } from '../config/site.ts';
+import { packages, minPrice, services, PACKAGE_KIND_LABEL, type PackageKind } from '../data/catalog.ts';
+import { formatPrice } from '../lib/format.ts';
+import { fitDescription } from '../lib/seo.ts';
+
+const title = `Прайс-лист студии «${SITE.name}» — цены на все процедуры`;
+const description = fitDescription(
+  `Актуальные цены студии «${SITE.name}»${inCity()}: LPG, Sketch, RF лифтинг, кавитация, вакуумный массаж, прессотерапия. Разовые сеансы от ${formatPrice(minPrice(services))}, абонементы на 5 и 10 сеансов.`,
+);
+const sections: { kind: PackageKind; id: string; title: string }[] = [
+  { kind: 'complex', id: 'kompleksy', title: 'Комплексы' },
+  { kind: 'course', id: 'kursy', title: 'Курсы' },
+  { kind: 'bundle', id: 'abonementy-5-5', title: `${PACKAGE_KIND_LABEL.bundle}: LPG + Sketch` },
+];
+---
+<Page
+  title={title}
+  description={description}
+  h1="Прайс-лист"
+  lead="Цены на разовые сеансы и абонементы. Цена за сеанс в абонементе указана под каждой строкой."
+  crumbs={[{ name: 'Цены', href: '/ceny/' }]}
+>
+  <PriceTabs />
+
+  {sections.map((s) => (
+    <section class="section" id={s.id} aria-labelledby={`${s.id}-title`}>
+      <h2 id={`${s.id}-title`}>{s.title}</h2>
+      <div class="cards">
+        {packages.filter((p) => p.kind === s.kind).map((p) => <PackageCard pkg={p} />)}
+      </div>
+    </section>
+  ))}
+
+  <p class="muted">Цены указаны в рублях. Срок действия абонементов и условия акций уточняйте у администратора.</p>
+</Page>

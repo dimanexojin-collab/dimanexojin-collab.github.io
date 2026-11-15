@@ -1,0 +1,26 @@
+---
+import { bookingHref } from '../config/site.ts';
+import ContactButtons from './ContactButtons.astro';
+
+interface Props {
+  title?: string;
+  text?: string;
+  /** Текст для WhatsApp */
+  message?: string;
+}
+const {
+  title = 'Запишитесь на консультацию',
+  text = 'Подберём процедуры и график под ваши цели. Перед курсом специалист проверит противопоказания.',
+  message = 'Здравствуйте! Хочу записаться на консультацию.',
+} = Astro.props;
+---
+<section class="cta-band" aria-labelledby="cta-title">
+  <div class="container">
+    <h2 id="cta-title">{title}</h2>
+    <p>{text}</p>
+    <div class="cta-band__actions">
+      <a class="btn btn--primary" href={bookingHref()}>Записаться</a>
+      <ContactButtons message={message} />
+    </div>
+  </div>
+</section>

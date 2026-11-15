@@ -1,0 +1,16 @@
+---
+import { bookingHref } from '../config/site.ts';
+import { trialPromo } from '../data/promos.ts';
+import { formatPrice } from '../lib/format.ts';
+---
+{trialPromo && (
+  <aside class="trial-banner card" aria-labelledby="trial-title">
+    <h2 id="trial-title">{trialPromo.title} за {formatPrice(trialPromo.price)}</h2>
+    <p>
+      {trialPromo.text}
+      {trialPromo.regular && <> Обычная цена сеанса — <s>{formatPrice(trialPromo.regular)}</s>.</>}
+    </p>
+    <p class="muted">Условия пробного сеанса уточняйте у администратора.</p>
+    <a class="btn btn--primary" href={bookingHref()}>Записаться на пробный сеанс</a>
+  </aside>
+)}

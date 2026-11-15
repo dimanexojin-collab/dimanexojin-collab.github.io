@@ -1,0 +1,50 @@
+---
+import { Picture } from 'astro:assets';
+import figure from '../assets/logo/figure.png';
+import { SITE, isTodo, bookingHref, whatsappLink } from '../config/site.ts';
+import { mainNav, isActive } from '../lib/nav.ts';
+import Icon from './Icon.astro';
+import MobileNav from './MobileNav.astro';
+
+const path = Astro.url.pathname;
+const current = (href: string) => (path === href ? 'page' : isActive(href, path) ? 'true' : undefined);
+---
+<header class="site-header">
+  <div class="site-header__inner container">
+    <a class="logo" href="/" title="На главную">
+      <Picture src={figure} formats={['avif', 'webp']} width={36} densities={[1, 2]} alt="" loading="eager" />
+      <span class="logo__text">
+        <span class="logo__name">{SITE.name}</span>
+        <span class="logo__tagline">{SITE.tagline}</span>
+      </span>
+    </a>
+
+    <nav class="main-nav" aria-label="Основная навигация">
+      <ul>
+        {mainNav.map((item) => (
+          <li class:list={{ 'has-children': !!item.children }}>
+            <a href={item.href} aria-current={current(item.href)}>{item.label}</a>
+            {item.children && (
+              <ul class="submenu">
+                {item.children.map((c) => (
+                  <li><a href={c.href} aria-current={current(c.href)}>{c.label}</a></li>
+                ))}
+              </ul>
+            )}
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="header-contacts">
+      <a class="header-contacts__phone" href={SITE.phoneHref}>
+        <span class:list={[{ todo: isTodo(SITE.phone) }]}>{SITE.phone}</span>
+      </a>
+      <a href={whatsappLink()} target="_blank" rel="noopener" aria-label="Написать в WhatsApp"><Icon name="whatsapp" /></a>
+      <a href={SITE.telegram} target="_blank" rel="noopener" aria-label="Написать в Telegram"><Icon name="telegram" /></a>
+      <a class="btn btn--primary" href={bookingHref()}>Записаться</a>
+    </div>
+
+    <MobileNav />
+  </div>
+</header>

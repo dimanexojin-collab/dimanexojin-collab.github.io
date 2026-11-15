@@ -1,0 +1,47 @@
+---
+import Page from '../layouts/Page.astro';
+import ContactButtons from '../components/ContactButtons.astro';
+import MapEmbed from '../components/MapEmbed.astro';
+import LeadForm from '../components/LeadForm.astro';
+import { SITE, isTodo, inCity, phoneFilled, hoursText, filled } from '../config/site.ts';
+import { fitDescription, fitTitle } from '../lib/seo.ts';
+
+const phone = phoneFilled();
+const title = fitTitle(`Контакты «${SITE.name}»: адрес, телефон${phone ? ` ${phone}` : ''}`, ', как добраться');
+const address = filled(SITE.address.street);
+const description = fitDescription(
+  `Контакты студии «${SITE.name}»${inCity()}${address ? `: ${address}` : ''}. Телефон, WhatsApp, Telegram, график работы и схема проезда. Запись на процедуры и консультацию.`,
+);
+const a = SITE.address;
+const hoursTodo = SITE.hours.some((h) => isTodo(h.open) || isTodo(h.close));
+---
+<Page
+  title={title}
+  description={description}
+  h1="Контакты"
+  crumbs={[{ name: 'Контакты', href: '/kontakty/' }]}
+  cta={false}
+>
+  <section class="section" aria-labelledby="nap-title">
+    <h2 id="nap-title">Адрес и телефон</h2>
+    <address>
+      <p>
+        <span class:list={[{ todo: isTodo(a.street) }]}>{a.street}</span>,
+        <span class:list={[{ todo: isTodo(a.locality) }]}>{a.locality}</span>
+      </p>
+      <p><a href={SITE.phoneHref}><span class:list={[{ todo: isTodo(SITE.phone) }]}>{SITE.phone}</span></a></p>
+      {!isTodo(SITE.email) && <p><a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>}
+    </address>
+    <h3>График работы</h3>
+    <p>{hoursText().map((h) => <span class:list={[{ todo: hoursTodo }]}>{h}</span>)}</p>
+    <ContactButtons message="Здравствуйте! Хочу записаться на процедуру." />
+  </section>
+
+  <section class="section" aria-labelledby="route-title">
+    <h2 id="route-title">Как добраться</h2>
+    <p class:list={[{ todo: isTodo(SITE.howToGet) }]}>{SITE.howToGet}</p>
+    <MapEmbed />
+  </section>
+
+  <LeadForm />
+</Page>

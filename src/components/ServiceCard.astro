@@ -1,0 +1,26 @@
+---
+import { getService, isNewAny } from '../data/catalog.ts';
+import type { ServicePage } from '../data/service-pages.ts';
+import { serviceFromPrice } from '../lib/seo.ts';
+import { formatPrice, formatMinutes } from '../lib/format.ts';
+
+interface Props {
+  page: ServicePage;
+  level?: 'h2' | 'h3';
+}
+const { page, level = 'h3' } = Astro.props;
+const Heading = level;
+const list = page.serviceIds.map(getService);
+const from = serviceFromPrice(page);
+---
+<article class="card service-card">
+  <Heading class="service-card__title">
+    <a href={`/uslugi/${page.slug}/`}>{page.name}</a>
+    {isNewAny(list) && <span class="badge badge--new">Новинка</span>}
+  </Heading>
+  <p>{page.summary}</p>
+  <p class="service-card__meta">
+    <span class="muted">{formatMinutes(list.map((s) => s.minutes))}</span> ·
+    <span class="price">от {formatPrice(from)}{page.priceMode === 'perSession' && ' за сеанс'}</span>
+  </p>
+</article>

@@ -1,0 +1,61 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import ServiceCard from '../components/ServiceCard.astro';
+import PackageCard from '../components/PackageCard.astro';
+import TrialBanner from '../components/TrialBanner.astro';
+import FirstVisitSteps from '../components/FirstVisitSteps.astro';
+import Reviews from '../components/Reviews.astro';
+import FaqAccordion from '../components/FaqAccordion.astro';
+import LeadForm from '../components/LeadForm.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { SITE, inCity } from '../config/site.ts';
+import { servicePages } from '../data/service-pages.ts';
+import { packages, minPrice, services, minPackagePrice } from '../data/catalog.ts';
+import { faq } from '../data/faq.ts';
+import { formatPrice } from '../lib/format.ts';
+import { fitDescription } from '../lib/seo.ts';
+
+const title = `${SITE.name} — аппаратная коррекция фигуры${inCity()}`;
+const description = fitDescription(
+  `Студия «${SITE.name}»${inCity()}: LPG и Sketch массаж, RF лифтинг, УЗ кавитация, прессотерапия. Процедуры от ${formatPrice(minPrice(services))}, курсы от ${formatPrice(minPackagePrice())}. Консультация перед курсом.`,
+);
+const complexes = packages.filter((p) => p.kind === 'complex');
+---
+<Base title={title} description={description}>
+  <Hero
+    title={`Аппаратная коррекция фигуры${inCity()}`}
+    lead="LPG и Sketch массаж, RF лифтинг, кавитация, прессотерапия и другие аппаратные процедуры. Подберём курс под ваши цели после консультации."
+  />
+
+  <section class="section container" aria-labelledby="services-title">
+    <h2 id="services-title">Процедуры</h2>
+    <div class="cards">
+      {servicePages.map((p) => <ServiceCard page={p} />)}
+    </div>
+    <p><a href="/ceny/">Полный прайс-лист</a></p>
+  </section>
+
+  <div class="section container"><TrialBanner /></div>
+
+  <section class="section container" aria-labelledby="complexes-title">
+    <h2 id="complexes-title">Комплексы</h2>
+    <div class="cards">
+      {complexes.map((p) => <PackageCard pkg={p} />)}
+    </div>
+    <p><a href="/abonementy/">Все комплексы и курсы</a></p>
+  </section>
+
+  <div class="section container"><FirstVisitSteps /></div>
+
+  <div class="section container"><Reviews limit={3} /></div>
+
+  <div class="section container">
+    <FaqAccordion items={faq.slice(0, 4)} title="Частые вопросы" id="home-faq" />
+    <p><a href="/faq/">Все вопросы и противопоказания</a></p>
+  </div>
+
+  <div class="section container"><LeadForm /></div>
+
+  <CtaBand />
+</Base>

@@ -1,0 +1,21 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../config/site.ts';
+import { servicePages } from '../data/service-pages.ts';
+---
+<Base title={`Страница не найдена — «${SITE.name}»`} description="Страница не найдена. Перейдите на главную, в каталог услуг или прайс-лист студии." noindex>
+  <section class="section container">
+    <h1>Страница не найдена</h1>
+    <p>Возможно, ссылка устарела или в адресе опечатка. Попробуйте начать с этих разделов:</p>
+    <ul>
+      <li><a href="/">Главная</a></li>
+      <li><a href="/uslugi/">Услуги</a></li>
+      <li><a href="/ceny/">Прайс-лист</a></li>
+      <li><a href="/kontakty/">Контакты</a></li>
+    </ul>
+    <h2>Популярные процедуры</h2>
+    <ul>
+      {servicePages.slice(0, 4).map((p) => <li><a href={`/uslugi/${p.slug}/`}>{p.name}</a></li>)}
+    </ul>
+  </section>
+</Base>

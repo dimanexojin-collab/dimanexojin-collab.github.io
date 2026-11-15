@@ -1,0 +1,26 @@
+---
+/** Мобильное меню на нативном <details> — работает без JS. */
+import { SITE, isTodo } from '../config/site.ts';
+import { mainNav } from '../lib/nav.ts';
+const path = Astro.url.pathname;
+---
+<details class="mobile-nav">
+  <summary aria-label="Открыть меню"><span aria-hidden="true">☰</span> Меню</summary>
+  <nav aria-label="Мобильная навигация">
+    <ul>
+      {mainNav.map((item) => (
+        <li>
+          <a href={item.href} aria-current={path === item.href ? 'page' : undefined}>{item.label}</a>
+          {item.children && (
+            <ul>
+              {item.children.map((c) => (
+                <li><a href={c.href} aria-current={path === c.href ? 'page' : undefined}>{c.label}</a></li>
+              ))}
+            </ul>
+          )}
+        </li>
+      ))}
+    </ul>
+    <p><a href={SITE.phoneHref}><span class:list={[{ todo: isTodo(SITE.phone) }]}>{SITE.phone}</span></a></p>
+  </nav>
+</details>

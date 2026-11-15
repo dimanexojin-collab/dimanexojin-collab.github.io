@@ -1,0 +1,31 @@
+---
+import { packageSavings, PACKAGE_KIND_LABEL, type Package } from '../data/catalog.ts';
+import { formatPrice } from '../lib/format.ts';
+
+interface Props {
+  pkg: Package;
+  level?: 'h2' | 'h3';
+}
+const { pkg, level = 'h3' } = Astro.props;
+const Heading = level;
+const save = packageSavings(pkg);
+const href = `/abonementy/${pkg.slug}/`;
+---
+<article class="card package-card" id={pkg.slug} data-package={pkg.id}>
+  <p class="package-card__kind muted">{PACKAGE_KIND_LABEL[pkg.kind]}</p>
+  <Heading class="package-card__title"><a href={href}>{pkg.name}</a></Heading>
+  {pkg.steps?.length ? (
+    <ol class="package-card__steps">
+      {pkg.steps.map((s) => <li>{s}</li>)}
+    </ol>
+  ) : (
+    <ul class="package-card__items">
+      {pkg.items.map((i) => <li>{i}</li>)}
+    </ul>
+  )}
+  <p class="package-card__price">
+    <span class="price" data-price={pkg.price}>{formatPrice(pkg.price)}</span>
+    {save && <span class="package-card__save muted"> выгода ~{formatPrice(save)}</span>}
+  </p>
+  <a class="btn" href={href} aria-label={`Подробнее: ${pkg.name}`}>Подробнее</a>
+</article>

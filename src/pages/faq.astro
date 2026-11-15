@@ -1,0 +1,37 @@
+---
+import Page from '../layouts/Page.astro';
+import FaqAccordion from '../components/FaqAccordion.astro';
+import { SITE } from '../config/site.ts';
+import { faq } from '../data/faq.ts';
+import { commonContraindications, disclaimer } from '../data/contraindications.ts';
+import { servicePages } from '../data/service-pages.ts';
+import { faqPage } from '../lib/schema.ts';
+import { fitDescription } from '../lib/seo.ts';
+
+const title = `Вопросы и противопоказания — «${SITE.name}»`;
+const description = fitDescription(
+  `Ответы на частые вопросы об аппаратной коррекции фигуры в студии «${SITE.name}»: сколько сеансов нужно, как часто ходить, как подготовиться. Противопоказания к LPG, RF, кавитации.`,
+);
+---
+<Page
+  title={title}
+  description={description}
+  h1="Частые вопросы и противопоказания"
+  crumbs={[{ name: 'Вопросы и противопоказания', href: '/faq/' }]}
+  jsonLd={[faqPage(faq)]}
+>
+  <FaqAccordion items={faq} title="Частые вопросы" id="voprosy" />
+
+  <section class="section" id="protivopokazaniya" aria-labelledby="contra-title">
+    <h2 id="contra-title">Противопоказания</h2>
+    <p>Общие противопоказания к аппаратным процедурам:</p>
+    <ul>
+      {commonContraindications.map((c) => <li>{c}</li>)}
+    </ul>
+    <p>Противопоказания к конкретным процедурам:</p>
+    <ul>
+      {servicePages.map((p) => <li><a href={`/uslugi/${p.slug}/#contra-title`}>{p.name}</a></li>)}
+    </ul>
+    <p><strong>{disclaimer}</strong></p>
+  </section>
+</Page>

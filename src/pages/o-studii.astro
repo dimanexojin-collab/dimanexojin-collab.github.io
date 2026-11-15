@@ -1,0 +1,44 @@
+---
+import Page from '../layouts/Page.astro';
+import { SITE, inCity } from '../config/site.ts';
+import { servicePages } from '../data/service-pages.ts';
+import { fitDescription } from '../lib/seo.ts';
+
+const title = `О студии «${SITE.name}» — оборудование и специалисты`;
+const description = fitDescription(
+  `Студия «${SITE.name}»${inCity()} — аппаратная коррекция фигуры: LPG, Sketch, RF лифтинг, кавитация, прессотерапия. Консультация перед курсом, индивидуальные программы.`,
+);
+---
+<Page
+  title={title}
+  description={description}
+  h1="О студии"
+  lead={`«${SITE.name}» — студия аппаратной коррекции фигуры${inCity()}.`}
+  crumbs={[{ name: 'О студии', href: '/o-studii/' }]}
+>
+  <section class="section" aria-labelledby="approach-title">
+    <h2 id="approach-title">Наш подход</h2>
+    <p>
+      Мы работаем с аппаратными методиками и подбираем программу индивидуально. Перед курсом специалист
+      проводит консультацию, уточняет цели и проверяет противопоказания. Мы не обещаем мгновенных результатов:
+      аппаратные процедуры работают курсом, а результат зависит от многих факторов.
+    </p>
+  </section>
+
+  <section class="section" aria-labelledby="methods-title">
+    <h2 id="methods-title">Процедуры студии</h2>
+    <ul>
+      {servicePages.map((p) => <li><a href={`/uslugi/${p.slug}/`}>{p.name}</a> — {p.summary}</li>)}
+    </ul>
+  </section>
+
+  <section class="section" aria-labelledby="equipment-title">
+    <h2 id="equipment-title">Оборудование</h2>
+    <p class="todo">Модели аппаратов и фото студии будут добавлены после получения информации от студии.</p>
+  </section>
+
+  <section class="section" aria-labelledby="team-title">
+    <h2 id="team-title">Специалисты</h2>
+    <p class="todo">Информация о специалистах будет добавлена после согласования со студией.</p>
+  </section>
+</Page>

@@ -1,0 +1,27 @@
+---
+import { SITE, isTodo, whatsappLink } from '../config/site.ts';
+import Icon from './Icon.astro';
+
+interface Props {
+  /** Предзаполненный текст для WhatsApp */
+  message?: string;
+  /** Показывать кнопку телефона */
+  phone?: boolean;
+  class?: string;
+}
+const { message, phone = true, class: cls } = Astro.props;
+const tgTodo = isTodo(SITE.telegram);
+---
+<div class:list={['contact-buttons', cls]}>
+  {phone && (
+    <a class="btn contact-buttons__phone" href={SITE.phoneHref}>
+      <Icon name="phone" /> <span class:list={[{ todo: isTodo(SITE.phone) }]}>{SITE.phone}</span>
+    </a>
+  )}
+  <a class="btn contact-buttons__wa" href={whatsappLink(message)} target="_blank" rel="noopener">
+    <Icon name="whatsapp" /> WhatsApp
+  </a>
+  <a class:list={['btn contact-buttons__tg', { todo: tgTodo }]} href={SITE.telegram} target="_blank" rel="noopener">
+    <Icon name="telegram" /> Telegram
+  </a>
+</div>

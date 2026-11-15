@@ -1,0 +1,35 @@
+---
+import { Picture } from 'astro:assets';
+// Фигура без фона (scripts/cutout-hero.mjs); исходник с фоном — ballerina.png
+import ballerina from '../assets/hero/ballerina-cutout.png';
+import { bookingHref } from '../config/site.ts';
+import { trialPromo } from '../data/promos.ts';
+import { formatPrice } from '../lib/format.ts';
+
+interface Props {
+  title: string;
+  lead: string;
+}
+const { title, lead } = Astro.props;
+---
+<section class="hero container" aria-labelledby="hero-title">
+  <div class="hero__text">
+    <h1 id="hero-title">{title}</h1>
+    <p class="lead">{lead}</p>
+    <div class="hero__actions">
+      <a class="btn btn--primary" href={bookingHref()}>Записаться</a>
+      {trialPromo && <a class="btn" href="/akcii/">Пробный LPG за {formatPrice(trialPromo.price)}</a>}
+    </div>
+  </div>
+  <div class="hero__media">
+    <Picture
+      src={ballerina}
+      formats={['avif', 'webp']}
+      widths={[146, 238]}
+      sizes="(min-width: 768px) 238px, 146px"
+      alt="Силуэт балерины — символ студии «Контур»"
+      loading="eager"
+      fetchpriority="high"
+    />
+  </div>
+</section>

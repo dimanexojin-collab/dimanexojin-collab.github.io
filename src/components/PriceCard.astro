@@ -1,0 +1,43 @@
+---
+import { displayName, perSession, savings, type Service } from '../data/catalog.ts';
+import { pageForService } from '../data/service-pages.ts';
+import { formatPrice } from '../lib/format.ts';
+
+interface Props {
+  service: Service;
+  /** Уровень заголовка карточки */
+  level?: 'h2' | 'h3' | 'h4';
+  /** Ссылка на страницу услуги */
+  link?: boolean;
+}
+const { service: s, level = 'h3', link = false } = Astro.props;
+const Heading = level;
+const page = pageForService(s.id);
+---
+<article class="card price-card" id={s.id} data-service={s.id}>
+  <Heading class="price-card__title">
+    {link && page ? <a href={`/uslugi/${page.slug}/`}>{displayName(s)}</a> : displayName(s)}
+    {' '}<span class="price-card__minutes muted">({s.minutes}&nbsp;мин)</span>
+    {s.isNew && <span class="badge badge--new">Новинка</span>}
+  </Heading>
+  <ul class="price-list">
+    {s.prices.map((row) => {
+      const save = savings(s, row);
+      return (
+        <li class:list={['price-row', { 'price-row--trial': row.trial }]}>
+          <span class="price-row__label">
+            {row.label}
+            {row.trial && <span class="badge badge--trial">Пробный</span>}
+          </span>
+          <span class="price-row__leader" aria-hidden="true"></span>
+          <span class="price" data-price={row.price}>{formatPrice(row.price)}</span>
+          {row.sessions > 1 && (
+            <span class="price-row__meta muted">
+              {formatPrice(perSession(row))} за сеанс{save > 0 && <>, экономия {formatPrice(save)}</>}
+            </span>
+          )}
+        </li>
+      );
+    })}
+  </ul>
+</article>

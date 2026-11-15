@@ -1,0 +1,38 @@
+{
+  "currency": "RUB",
+  "services": [
+    {"id": "lpg-body-25", "group": "LPG", "name": "LPG тело", "minutes": 25, "prices": [{"label": "Пробный", "sessions": 1, "price": 1000, "trial": true}, {"label": "1 сеанс", "sessions": 1, "price": 1300}, {"label": "5 сеансов", "sessions": 5, "price": 6000}, {"label": "10 сеансов", "sessions": 10, "price": 11000}]},
+    {"id": "lpg-body-45", "group": "LPG", "name": "LPG тела", "minutes": 45, "prices": [{"label": "1 сеанс", "sessions": 1, "price": 1700}, {"label": "5 сеансов", "sessions": 5, "price": 8000}, {"label": "10 сеансов", "sessions": 10, "price": 15000}]},
+    {"id": "lpg-face-20", "group": "LPG", "name": "LPG лица", "minutes": 20, "prices": [{"label": "1 сеанс", "sessions": 1, "price": 1200}, {"label": "5 сеансов", "sessions": 5, "price": 5000}, {"label": "10 сеансов", "sessions": 10, "price": 9000}]},
+    {"id": "rf-body-30", "group": "RF", "name": "RF лифтинг тела", "minutes": 30, "prices": [{"label": "1 сеанс", "sessions": 1, "price": 1000}, {"label": "5 сеансов", "sessions": 5, "price": 4200}, {"label": "10 сеансов", "sessions": 10, "price": 7500}]},
+    {"id": "rf-face-20", "group": "RF", "name": "RF лифтинг лица", "minutes": 20, "prices": [{"label": "1 сеанс", "sessions": 1, "price": 1400}, {"label": "5 сеансов", "sessions": 5, "price": 6000}, {"label": "10 сеансов", "sessions": 10, "price": 9000}]},
+    {"id": "cavitation-20", "group": "Кавитация", "name": "УЗ кавитация", "minutes": 20, "prices": [{"label": "1 сеанс", "sessions": 1, "price": 1400}, {"label": "5 сеансов", "sessions": 5, "price": 6000}, {"label": "10 сеансов", "sessions": 10, "price": 11000}]},
+    {"id": "cavitation-40", "group": "Кавитация", "name": "УЗ кавитация", "minutes": 40, "prices": [{"label": "1 сеанс", "sessions": 1, "price": 1800}, {"label": "5 сеансов", "sessions": 5, "price": 8000}, {"label": "10 сеансов", "sessions": 10, "price": 15000}]},
+    {"id": "sketch-40", "group": "Sketch", "name": "Sketch массаж", "minutes": 40, "isNew": true, "prices": [{"label": "1 сеанс", "sessions": 1, "price": 2500, "perSession": 2500}, {"label": "5 сеансов", "sessions": 5, "price": 8500, "perSession": 1700}, {"label": "10 сеансов", "sessions": 10, "price": 15000, "perSession": 1500}]},
+    {"id": "laser-lipolysis-30", "group": "Прочее", "name": "Лазерный липолиз", "minutes": 30, "prices": [{"label": "1 сеанс", "sessions": 1, "price": 1200}, {"label": "5 сеансов", "sessions": 5, "price": 4500}, {"label": "10 сеансов", "sessions": 10, "price": 8000}]},
+    {"id": "biophoton-30", "group": "Прочее", "name": "Биофотон", "minutes": 30, "prices": [{"label": "1 сеанс", "sessions": 1, "price": 900}, {"label": "5 сеансов", "sessions": 5, "price": 4000}, {"label": "10 сеансов", "sessions": 10, "price": 6000}]},
+    {"id": "vacuum-30", "group": "Вакуумный массаж", "name": "Вакуумный массаж", "minutes": 30, "prices": [{"label": "1 сеанс", "sessions": 1, "price": 1300}, {"label": "5 сеансов", "sessions": 5, "price": 5500}, {"label": "10 сеансов", "sessions": 10, "price": 10000}]},
+    {"id": "vacuum-45", "group": "Вакуумный массаж", "name": "Вакуумный массаж", "minutes": 45, "prices": [{"label": "1 сеанс", "sessions": 1, "price": 1600}, {"label": "5 сеансов", "sessions": 5, "price": 7000}, {"label": "10 сеансов", "sessions": 10, "price": 12000}]},
+    {"id": "pressotherapy-30", "group": "Прессотерапия", "name": "Прессотерапия", "minutes": 30, "prices": [{"label": "1 сеанс", "sessions": 1, "price": 1100}, {"label": "5 сеансов", "sessions": 5, "price": 4500}, {"label": "10 сеансов", "sessions": 10, "price": 8500}]},
+    {"id": "pressotherapy-45", "group": "Прессотерапия", "name": "Прессотерапия", "minutes": 45, "prices": [{"label": "1 сеанс", "sessions": 1, "price": 1300}, {"label": "5 сеансов", "sessions": 5, "price": 5500}, {"label": "10 сеансов", "sessions": 10, "price": 9500}]},
+    {"id": "vibro-40", "group": "Вибромассаж", "name": "Вибромассаж", "minutes": 40, "prices": [{"label": "1 сеанс", "sessions": 1, "price": 1400}, {"label": "5 сеансов", "sessions": 5, "price": 6000}, {"label": "10 сеансов", "sessions": 10, "price": 11000}]},
+    {"id": "vibro-neck-10", "group": "Вибромассаж", "name": "Вибромассаж шеи", "minutes": 10, "prices": [{"label": "1 сеанс", "sessions": 1, "price": 400}, {"label": "10 сеансов", "sessions": 10, "price": 3000}]}
+  ],
+  "lpgSketchBundles": [
+    {"id": "lpg25-sketch", "title": "5+5: LPG (25 мин) + Sketch (40 мин)", "items": ["5 сеансов LPG (25 мин)", "5 сеансов Sketch (40 мин)"], "price": 12500},
+    {"id": "lpg45-sketch", "title": "5+5: LPG (45 мин) + Sketch (40 мин)", "items": ["5 сеансов LPG (45 мин)", "5 сеансов Sketch (40 мин)"], "price": 14500}
+  ],
+  "complexes": [
+    {"id": "volume-reduction", "name": "Уменьшение объёмов", "price": 12500, "items": ["5 сеансов Sketch (40 мин)", "2 сеанса УЗ кавитации (20 мин)", "3 сеанса прессотерапии (30 мин)"]},
+    {"id": "edema-relief", "name": "Снятие отёков", "price": 11500, "items": ["5 сеансов Sketch (40 мин)", "1 сеанс УЗ кавитации (20 мин)", "4 сеанса прессотерапии (30 мин)"]},
+    {"id": "skin-lifting", "name": "Подтяжка кожи", "price": 11000, "items": ["5 сеансов Sketch (40 мин)", "2 сеанса УЗ кавитации (20 мин)", "2 сеанса RF лифтинга (30 мин)"]},
+    {"id": "anti-cellulite", "name": "Антицеллюлит", "price": 12500, "items": ["5 сеансов Sketch (40 мин)", "2 сеанса УЗ кавитации (20 мин)", "3 сеанса вибромассажа (30 мин)"]}
+  ],
+  "courses": [
+    {"id": "dream-figure", "name": "Фигура мечты", "price": 21500, "items": ["10 сеансов LPG массажа тела (25 мин)", "5 сеансов УЗ кавитации (20 мин)", "5 сеансов прессотерапии (30 мин)", "3 сеанса вакуумного массажа"]},
+    {"id": "figure-modeling-1", "name": "Моделирование фигуры 1", "price": 18000, "items": ["10 сеансов LPG массажа тела (25 мин)", "5 сеансов УЗ кавитации (20 мин)", "5 сеансов RF лифтинга тела (30 мин)"]},
+    {"id": "figure-modeling-2", "name": "Моделирование фигуры 2", "price": 21000, "items": ["5 сеансов LPG массажа тела (45 мин)", "5 сеансов LPG массажа тела (25 мин)", "5 сеансов УЗ кавитации (20 мин)", "5 сеансов RF лифтинга тела (30 мин)"]},
+    {"id": "slimness-formula", "name": "Формула стройности", "price": 23000, "items": ["10 сеансов LPG массажа (45 мин)", "5 сеансов УЗ кавитации (20 мин)", "2 сеанса вибрационного массажа (30 мин)", "3 сеанса вакуумного массажа (30 мин)"]},
+    {"id": "silhouette-premium", "name": "Силуэт Премиум", "price": 25000, "steps": ["LPG массаж (25 мин) + SKETCH (40 мин)", "Вибромассаж (30 мин) + Вакуумный массаж (30 мин)", "LPG массаж (45 мин) + Ультразвуковая терапия (20 мин)", "Вибромассаж (30 мин) + Прессотерапия (30 мин)", "LPG массаж (45 мин) + SKETCH (40 мин)", "Прессотерапия (30 мин) + LPG массаж (45 мин)", "Вакуумный массаж (30 мин) + SKETCH (40 мин)", "Вибромассаж (30 мин) + LPG массаж (45 мин)", "LPG массаж (45 мин) + SKETCH (40 мин)"]}
+  ]
+}

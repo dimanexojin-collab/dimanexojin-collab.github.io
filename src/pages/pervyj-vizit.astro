@@ -1,0 +1,48 @@
+---
+import Page from '../layouts/Page.astro';
+import FirstVisitSteps from '../components/FirstVisitSteps.astro';
+import TrialBanner from '../components/TrialBanner.astro';
+import { SITE } from '../config/site.ts';
+import { fitDescription } from '../lib/seo.ts';
+
+const title = `Первый визит в «${SITE.name}»: как проходит`;
+const description = fitDescription(
+  `Как проходит первый визит в студию «${SITE.name}»: запись, консультация и проверка противопоказаний, первая процедура и план курса. Что взять с собой и как подготовиться.`,
+);
+---
+<Page
+  title={title}
+  description={description}
+  h1="Первый визит"
+  lead="Рассказываем, что вас ждёт на первом визите и как подготовиться к аппаратным процедурам."
+  crumbs={[{ name: 'Первый визит', href: '/pervyj-vizit/' }]}
+>
+  <FirstVisitSteps title="Четыре шага первого визита" />
+
+  <section class="section" aria-labelledby="prepare-title">
+    <h2 id="prepare-title">Как подготовиться</h2>
+    <ul>
+      <li>За 1–2 часа до процедуры лучше не есть плотно.</li>
+      <li>В день процедуры пейте достаточно воды.</li>
+      <li>Не наносите на зону процедуры кремы и масла, если специалист не сказал иного.</li>
+      <li>Если у вас есть хронические заболевания или вы принимаете лекарства — сообщите об этом на консультации.</li>
+    </ul>
+  </section>
+
+  <section class="section" aria-labelledby="bring-title">
+    <h2 id="bring-title">Что взять с собой</h2>
+    <p>Удобное бельё. Костюм для LPG и одноразовые принадлежности выдаются в студии.</p>
+  </section>
+
+  <section class="section" aria-labelledby="duration-title">
+    <h2 id="duration-title">Сколько времени займёт визит</h2>
+    <p>Заложите на первый визит дополнительно 15–20 минут к длительности процедуры: это время на знакомство и консультацию.</p>
+  </section>
+
+  <section class="section" aria-labelledby="after-title">
+    <h2 id="after-title">После процедуры</h2>
+    <p>Специалист расскажет о рекомендациях после процедуры и предложит график курса. Ответы на частые вопросы — на странице <a href="/faq/">«Вопросы и противопоказания»</a>.</p>
+  </section>
+
+  <TrialBanner />
+</Page>

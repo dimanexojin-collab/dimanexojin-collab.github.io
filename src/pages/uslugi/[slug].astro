@@ -1,0 +1,106 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Page from '../../layouts/Page.astro';
+import PriceCard from '../../components/PriceCard.astro';
+import PackageCard from '../../components/PackageCard.astro';
+import ServiceCard from '../../components/ServiceCard.astro';
+import FaqAccordion from '../../components/FaqAccordion.astro';
+import TrialBanner from '../../components/TrialBanner.astro';
+import { servicePages, type ServicePage } from '../../data/service-pages.ts';
+import { getService, packagesContaining, trialRow } from '../../data/catalog.ts';
+import { serviceTitle, serviceDescription } from '../../lib/seo.ts';
+import { serviceLd, faqPage } from '../../lib/schema.ts';
+
+export const getStaticPaths = (() =>
+  servicePages.map((page) => ({ params: { slug: page.slug }, props: { page } }))) satisfies GetStaticPaths;
+
+interface Props {
+  page: ServicePage;
+}
+const { page } = Astro.props;
+const list = page.serviceIds.map(getService);
+const description = serviceDescription(page);
+const related = packagesContaining(page.serviceIds);
+const hasTrial = list.some((s) => trialRow(s));
+
+// Соседние услуги: следующие 3 по кругу
+const idx = servicePages.indexOf(page);
+const neighbours = [1, 2, 3].map((i) => servicePages[(idx + i) % servicePages.length]);
+---
+<Page
+  title={serviceTitle(page)}
+  description={description}
+  h1={page.h1}
+  lead={page.summary}
+  crumbs={[{ name: 'Услуги', href: '/uslugi/' }, { name: page.name, href: `/uslugi/${page.slug}/` }]}
+  jsonLd={[serviceLd(page, description), page.faq.length ? faqPage(page.faq) : null]}
+  ctaMessage={`Здравствуйте! Хочу записаться: ${page.name}.`}
+>
+  <section class="section" aria-labelledby="about-title">
+    <h2 id="about-title">О процедуре</h2>
+    {page.intro.map((p) => <p>{p}</p>)}
+  </section>
+
+  <section class="section" aria-labelledby="prices-title">
+    <h2 id="prices-title">Цены</h2>
+    <div class="cards">
+      {list.map((s) => <PriceCard service={s} level="h3" />)}
+    </div>
+    <p><a href="/ceny/">Весь прайс-лист</a></p>
+  </section>
+
+  {hasTrial && <TrialBanner />}
+
+  <section class="section" aria-labelledby="how-title">
+    <h2 id="how-title">Как проходит процедура</h2>
+    <ol class="steps">
+      {page.how.map((s) => <li>{s}</li>)}
+    </ol>
+  </section>
+
+  <section class="section" aria-labelledby="effects-title">
+    <h2 id="effects-title">Чего можно ожидать</h2>
+    <ul>
+      {page.effects.map((e) => <li>{e}</li>)}
+    </ul>
+    <p class="muted">Результат индивидуален и зависит от исходного состояния, регулярности процедур и образа жизни.</p>
+  </section>
+
+  <section class="section" aria-labelledby="zones-title">
+    <h2 id="zones-title">Зоны</h2>
+    <ul>
+      {page.zones.map((z) => <li>{z}</li>)}
+    </ul>
+  </section>
+
+  <section class="section" aria-labelledby="course-title">
+    <h2 id="course-title">Сколько процедур нужно</h2>
+    <p>{page.course}</p>
+  </section>
+
+  {related.length > 0 && (
+    <section class="section" aria-labelledby="packages-title">
+      <h2 id="packages-title">Комплексы и курсы с процедурой «{page.name}»</h2>
+      <div class="cards">
+        {related.map((p) => <PackageCard pkg={p} />)}
+      </div>
+    </section>
+  )}
+
+  <section class="section" aria-labelledby="contra-title">
+    <h2 id="contra-title">Противопоказания</h2>
+    <ul>
+      {page.contraindications.map((c) => <li>{c}</li>)}
+    </ul>
+    <p>Полный список — на странице <a href="/faq/#protivopokazaniya">«Вопросы и противопоказания»</a>. Перед курсом обязательна консультация специалиста.</p>
+  </section>
+
+  {page.faq.length > 0 && <FaqAccordion items={page.faq} title="Вопросы о процедуре" id="service-faq" />}
+
+  <section class="section" aria-labelledby="more-title">
+    <h2 id="more-title">Другие процедуры</h2>
+    <div class="cards">
+      {neighbours.map((p) => <ServiceCard page={p} />)}
+    </div>
+  </section>
+</Page>

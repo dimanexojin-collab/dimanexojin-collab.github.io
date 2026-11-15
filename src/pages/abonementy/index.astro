@@ -1,0 +1,36 @@
+---
+import Page from '../../layouts/Page.astro';
+import PackageCard from '../../components/PackageCard.astro';
+import { SITE, inCity } from '../../config/site.ts';
+import { packages, minPackagePrice, type PackageKind } from '../../data/catalog.ts';
+import { formatPrice } from '../../lib/format.ts';
+import { fitDescription, fitTitle } from '../../lib/seo.ts';
+
+const title = fitTitle(`Комплексы и курсы коррекции фигуры — от ${formatPrice(minPackagePrice())}`);
+const description = fitDescription(
+  `Комплексы и курсы студии «${SITE.name}»${inCity()}: уменьшение объёмов, снятие отёков, подтяжка кожи, антицеллюлит, абонементы LPG + Sketch. Цены от ${formatPrice(minPackagePrice())}.`,
+);
+const sections: { kind: PackageKind; id: string; title: string; text: string }[] = [
+  { kind: 'complex', id: 'kompleksy', title: 'Комплексы', text: 'Короткие программы под конкретную задачу: 9–10 процедур в выгодном сочетании.' },
+  { kind: 'course', id: 'kursy', title: 'Курсы', text: 'Расширенные программы для комплексной работы с фигурой.' },
+  { kind: 'bundle', id: 'abonementy-5-5', title: 'Абонементы 5+5: LPG + Sketch', text: 'Пять сеансов LPG и пять сеансов Sketch по специальной цене.' },
+];
+---
+<Page
+  title={title}
+  description={description}
+  h1="Комплексы и курсы"
+  lead="Сочетания процедур дешевле, чем разовые сеансы. Программу и график специалист подбирает на консультации."
+  crumbs={[{ name: 'Комплексы и курсы', href: '/abonementy/' }]}
+>
+  {sections.map((s) => (
+    <section class="section" id={s.id} aria-labelledby={`${s.id}-title`}>
+      <h2 id={`${s.id}-title`}>{s.title}</h2>
+      <p>{s.text}</p>
+      <div class="cards">
+        {packages.filter((p) => p.kind === s.kind).map((p) => <PackageCard pkg={p} />)}
+      </div>
+    </section>
+  ))}
+  <p class="muted">«Выгода» рассчитана относительно цены разовых сеансов из <a href="/ceny/">прайс-листа</a>. Срок действия уточняйте у администратора.</p>
+</Page>

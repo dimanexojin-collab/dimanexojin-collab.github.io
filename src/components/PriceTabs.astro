@@ -1,0 +1,47 @@
+---
+/**
+ * Прайс по группам. Без JS видны все группы (якоря #lpg, #rf, …).
+ * С JS появляются кнопки-фильтры, которые переключают атрибут `hidden` у секций.
+ */
+import { groups } from '../data/catalog.ts';
+import PriceCard from './PriceCard.astro';
+
+const list = groups();
+---
+<div class="price-tabs" data-price-tabs>
+  <div class="price-tabs__filters" role="group" aria-label="Фильтр прайса по процедурам" hidden data-filters>
+    <button type="button" class="btn" aria-pressed="true" data-filter="all">Все</button>
+    {list.map((g) => <button type="button" class="btn" aria-pressed="false" data-filter={g.anchor}>{g.label}</button>)}
+  </div>
+
+  {list.map((g) => (
+    <section class="price-group" id={g.anchor} aria-labelledby={`${g.anchor}-title`} data-panel={g.anchor}>
+      <h2 id={`${g.anchor}-title`} class="price-group__title">{g.label}</h2>
+      <div class="cards">
+        {g.services.map((s) => <PriceCard service={s} level="h3" link />)}
+      </div>
+    </section>
+  ))}
+</div>
+
+<script>
+  for (const root of document.querySelectorAll<HTMLElement>('[data-price-tabs]')) {
+    const filters = root.querySelector<HTMLElement>('[data-filters]');
+    const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-filter]')];
+    const panels = [...root.querySelectorAll<HTMLElement>('[data-panel]')];
+    if (!filters) continue;
+    const select = (key: string) => {
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filter === key)));
+      panels.forEach((p) => (p.hidden = key !== 'all' && p.dataset.panel !== key));
+    };
+    filters.hidden = false;
+    filters.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-filter]');
+      if (!btn) return;
+      select(btn.dataset.filter!);
+      history.replaceState(null, '', btn.dataset.filter === 'all' ? location.pathname : `#${btn.dataset.filter}`);
+    });
+    const hash = location.hash.slice(1);
+    if (hash && panels.some((p) => p.dataset.panel === hash)) select(hash);
+  }
+</script>

@@ -1,0 +1,61 @@
+/* Каркас: сброс, типографика, фон, контейнер, утилиты. */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: calc(var(--header-h) + 1rem); scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--graphite);
+  background: var(--bg);
+  overflow-wrap: break-word;
+  padding-bottom: 96px;
+}
+/* мягкие световые градиенты «жемчуга» */
+body::before {
+  content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(60vmax 40vmax at 8% -5%, rgba(255, 248, 238, .95), transparent 60%),
+    radial-gradient(50vmax 40vmax at 100% 20%, rgba(255, 255, 255, .8), transparent 60%),
+    radial-gradient(45vmax 35vmax at 0% 100%, rgba(255, 250, 244, .7), transparent 60%),
+    linear-gradient(160deg, #F2F0ED 0%, #E8E6E3 55%, #EFEDEA 100%);
+}
+@media (min-width: 1180px) { body { padding-bottom: 0; } }
+img, svg { max-width: 100%; height: auto; display: block; }
+a { color: inherit; text-underline-offset: .2em; text-decoration-thickness: 1px; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 3px solid #5b7fa6; outline-offset: 3px; border-radius: 6px; }
+main:focus { outline: none; }
+h1, h2, h3 { line-height: 1.2; margin: 0 0 var(--s-4); text-wrap: balance; }
+h1 { font-size: clamp(1.7rem, 6.2vw, 3rem); font-weight: 800; }
+h2 { font-size: clamp(1.3rem, 4.4vw, 1.9rem); font-weight: 800; }
+h3 { font-size: 1.1rem; font-weight: 800; }
+p { margin: 0 0 var(--s-4); }
+ul, ol { padding-left: 1.2em; }
+li::marker { color: var(--graphite-2); }
+s { color: var(--muted); }
+
+/* H1 и заголовки разделов: капс + тиснение */
+h1, .section > h2, .price-group__title {
+  text-transform: uppercase; letter-spacing: .07em; color: var(--graphite); text-shadow: var(--emboss);
+}
+.section > h2, .price-group__title { font-size: clamp(1.15rem, 4vw, 1.55rem); letter-spacing: .06em; margin-bottom: var(--s-6); }
+
+.container { width: var(--container); margin-inline: auto; }
+.section { padding-block: var(--s-8); }
+@media (min-width: 768px) { .section { padding-block: var(--s-9); } }
+p.lead { font-size: 1.1rem; color: var(--graphite-2); max-width: 62ch; }
+.muted { color: var(--muted); }
+.visually-hidden {
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.skip-link { position: absolute; left: var(--s-4); top: -100px; z-index: 100; padding: var(--s-2) var(--s-4); background: var(--graphite); color: #fff; border-radius: 12px; }
+.skip-link:focus { top: var(--s-4); }
+.todo { outline: 1px dashed var(--error); outline-offset: 2px; }
+[hidden] { display: none !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}

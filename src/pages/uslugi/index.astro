@@ -1,0 +1,36 @@
+---
+import Page from '../../layouts/Page.astro';
+import ServiceCard from '../../components/ServiceCard.astro';
+import { SITE, inCity } from '../../config/site.ts';
+import { servicePages } from '../../data/service-pages.ts';
+import { minPrice, services, minPackagePrice } from '../../data/catalog.ts';
+import { formatPrice } from '../../lib/format.ts';
+import { fitDescription, fitTitle } from '../../lib/seo.ts';
+
+const title = fitTitle(`Услуги студии «${SITE.name}»: LPG, RF, кавитация${inCity()}`);
+const description = fitDescription(
+  `Аппаратная коррекция фигуры в студии «${SITE.name}»${inCity()}: ${servicePages.map((p) => p.name).join(', ')}. Цены от ${formatPrice(minPrice(services))}, комплексы от ${formatPrice(minPackagePrice())}.`,
+);
+---
+<Page
+  title={title}
+  description={description}
+  h1="Услуги аппаратной коррекции"
+  lead="Аппаратные процедуры для работы с объёмами, отёчностью, рельефом и тонусом кожи. Перед курсом специалист проводит консультацию и проверяет противопоказания."
+  crumbs={[{ name: 'Услуги', href: '/uslugi/' }]}
+>
+  <section class="section" aria-labelledby="list-title">
+    <h2 id="list-title" class="visually-hidden">Список процедур</h2>
+    <div class="cards">
+      {servicePages.map((p) => <ServiceCard page={p} />)}
+    </div>
+  </section>
+  <section class="section" aria-labelledby="combo-title">
+    <h2 id="combo-title">Процедуры выгоднее курсом</h2>
+    <p>
+      Процедуры дают накопительный эффект и хорошо сочетаются между собой. Готовые сочетания со скидкой —
+      в разделе <a href="/abonementy/">«Комплексы и курсы»</a>, все цены — в <a href="/ceny/">прайс-листе</a>.
+      Если вы у нас впервые, прочитайте, <a href="/pervyj-vizit/">как проходит первый визит</a>.
+    </p>
+  </section>
+</Page>

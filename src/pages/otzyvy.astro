@@ -1,0 +1,26 @@
+---
+import Page from '../layouts/Page.astro';
+import Reviews from '../components/Reviews.astro';
+import { SITE } from '../config/site.ts';
+import { reviews } from '../data/reviews.ts';
+import { reviewsLd } from '../lib/schema.ts';
+import { fitDescription } from '../lib/seo.ts';
+
+const title = `Отзывы клиентов студии «${SITE.name}»`;
+const description = fitDescription(
+  `Отзывы клиентов студии аппаратной коррекции фигуры «${SITE.name}» о процедурах LPG, Sketch, RF лифтинг, кавитация и прессотерапия. Публикуем только реальные отзывы.`,
+);
+---
+<Page
+  title={title}
+  description={description}
+  h1="Отзывы"
+  crumbs={[{ name: 'Отзывы', href: '/otzyvy/' }]}
+  jsonLd={[reviewsLd(reviews)]}
+>
+  {reviews.length > 0 ? (
+    <Reviews title="Что говорят клиенты" />
+  ) : (
+    <p>Мы публикуем только реальные отзывы клиентов. Раздел скоро пополнится.</p>
+  )}
+</Page>

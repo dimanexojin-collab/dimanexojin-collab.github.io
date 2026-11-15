@@ -1,0 +1,70 @@
+---
+/**
+ * Базовый layout: <head> с SEO, шрифт, JSON-LD (бизнес + сайт + крошки + доп. разметка страницы),
+ * skip-link, шапка, <main>, футер, нижняя мобильная панель.
+ */
+// Сабсеты Manrope Variable (scripts/subset-fonts.mjs): unicode-range ниже совпадает с диапазонами скрипта.
+import manropeCyr from '../assets/fonts/manrope-cyr.woff2?url';
+import manropeLat from '../assets/fonts/manrope-lat.woff2?url';
+import '../styles/tokens.css';
+import '../styles/base.css';
+import '../styles/components.css';
+import Seo from '../components/Seo.astro';
+import JsonLd from '../components/JsonLd.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import StickyMobileCta from '../components/StickyMobileCta.astro';
+import { absUrl } from '../lib/seo.ts';
+import { isNoindex } from '../lib/noindex.ts';
+import { business, website, breadcrumbs, type Crumb, type JsonLd as Ld } from '../lib/schema.ts';
+
+export interface Props {
+  title: string;
+  description: string;
+  /** Цепочка крошек (с главной). Для BreadcrumbList; видимые крошки рисует Page.astro */
+  crumbs?: Crumb[];
+  /** Дополнительная JSON-LD разметка страницы */
+  jsonLd?: (Ld | null)[];
+  noindex?: boolean;
+  ogImage?: string;
+  ogType?: 'website' | 'article' | 'product';
+}
+
+const { title, description, crumbs, jsonLd = [], ogImage, ogType } = Astro.props;
+const path = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${Astro.url.pathname}/`;
+const noindex = Astro.props.noindex ?? isNoindex(path);
+const is404 = path === '/404/';
+const canonical = is404 ? undefined : absUrl(path);
+
+const fontFaces = `
+@font-face{font-family:'Manrope Variable';font-style:normal;font-display:swap;font-weight:200 800;src:url(${manropeCyr}) format('woff2');unicode-range:U+0401,U+0410-044F,U+0451,U+2116;}
+@font-face{font-family:'Manrope Variable';font-style:normal;font-display:swap;font-weight:200 800;src:url(${manropeLat}) format('woff2');unicode-range:U+0020-007E,U+00A0,U+00A9,U+00AB,U+00B0,U+00B7,U+00BB,U+00D7,U+2013-2014,U+2018-201E,U+2022,U+2026,U+20BD,U+2192,U+2212;}
+@font-face{font-family:'Manrope Fallback';src:local('Arial');size-adjust:103%;ascent-override:102%;descent-override:29%;line-gap-override:0%;}
+`;
+---
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <Seo title={title} description={description} canonical={canonical} noindex={noindex} ogImage={ogImage} ogType={ogType} />
+    <meta name="theme-color" content="#ECEAE7" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="preload" href={manropeCyr} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={manropeLat} as="font" type="font/woff2" crossorigin />
+    <style is:inline set:html={fontFaces}></style>
+    <JsonLd data={[business(), website(), crumbs && crumbs.length > 1 ? breadcrumbs(crumbs) : null, ...jsonLd]} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Перейти к содержанию</a>
+    <Header />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+    <StickyMobileCta />
+  </body>
+</html>

@@ -1,0 +1,33 @@
+/* Дизайн-токены: жемчужно-серая палитра, графит, серебро, стекло. */
+:root {
+  --bg: #ECEAE7;
+  --bg-2: #F6F5F3;
+  --surface: rgba(255, 255, 255, .62);
+  --surface-solid: #FAFAF9;
+  --graphite: #2A2A2E;
+  --graphite-2: #46464B;
+  --muted: #5E5D60;
+  --silver: #B9B9BE;
+  --silver-2: #E2E1DF;
+  --line: rgba(42, 42, 46, .14);
+  --pearl-glow: #FFF8EE;
+  --success: #3F6B57;
+  --error: #9A3B3B;
+
+  --r-card: 22px;
+  --r-btn: 999px;
+  --glass: linear-gradient(180deg, #fff 0%, rgba(255, 255, 255, .72) 55%, rgba(247, 246, 244, .8) 100%);
+  --metal: linear-gradient(180deg, #46464b 0%, #2a2a2e 48%, #1d1d20 100%);
+  --shadow-card: 0 1px 0 #fff inset, 0 0 0 1px rgba(255, 255, 255, .7), 0 14px 34px -14px rgba(40, 40, 45, .28);
+  --shadow-lift: 0 1px 0 #fff inset, 0 0 0 1px rgba(255, 255, 255, .8), 0 22px 40px -14px rgba(40, 40, 45, .32);
+  --emboss: 0 1px 0 rgba(255, 255, 255, .95), 0 -1px 0 rgba(0, 0, 0, .22), 0 6px 14px rgba(40, 40, 45, .14);
+
+  --font: 'Manrope Variable', 'Manrope Fallback', system-ui, sans-serif;
+
+  --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 20px;
+  --s-6: 24px; --s-7: 32px; --s-8: 40px; --s-9: 56px; --s-10: 80px;
+
+  --container: min(1160px, 100% - 2rem);
+  --header-h: 64px;
+}
+@media (min-width: 768px) { :root { --container: min(1160px, 100% - 4rem); --header-h: 76px; } }

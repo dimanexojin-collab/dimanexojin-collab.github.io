@@ -1,0 +1,37 @@
+---
+import Page from '../layouts/Page.astro';
+import { SITE, inCity, bookingHref } from '../config/site.ts';
+import { promos, trialPromo } from '../data/promos.ts';
+import { formatPrice } from '../lib/format.ts';
+import { fitDescription, fitTitle } from '../lib/seo.ts';
+
+const title = trialPromo
+  ? fitTitle(`Акции: пробный LPG за ${formatPrice(trialPromo.price)}`, ` — «${SITE.name}»`)
+  : fitTitle('Акции и спецпредложения', ` — «${SITE.name}»`);
+const description = fitDescription(
+  `Акции студии «${SITE.name}»${inCity()}: ${trialPromo ? `пробный сеанс LPG за ${formatPrice(trialPromo.price)}, ` : ''}абонементы 5+5 LPG + Sketch по специальной цене. Условия уточняйте у администратора.`,
+);
+---
+<Page
+  title={title}
+  description={description}
+  h1="Акции и спецпредложения"
+  lead="Специальные цены для знакомства со студией и на сочетания процедур."
+  crumbs={[{ name: 'Акции', href: '/akcii/' }]}
+>
+  <div class="cards">
+    {promos.map((p) => (
+      <article class="card promo" id={p.id}>
+        <h2 class="promo__title"><a href={p.href}>{p.title}</a></h2>
+        <p>{p.text}</p>
+        <p>
+          <span class="price" data-price={p.price}>{formatPrice(p.price)}</span>
+          {p.regular && <> <s class="muted">{formatPrice(p.regular)}</s></>}
+        </p>
+        {p.terms ? <p class="muted">{p.terms}</p> : <p class="muted">Условия и срок действия уточняйте у администратора.</p>}
+        <a class="btn btn--primary" href={bookingHref()}>Записаться</a>
+      </article>
+    ))}
+  </div>
+  <p class="section">Готовые программы со скидкой — в разделе <a href="/abonementy/">«Комплексы и курсы»</a>.</p>
+</Page>

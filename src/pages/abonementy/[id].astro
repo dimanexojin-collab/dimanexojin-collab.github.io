@@ -1,0 +1,93 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Page from '../../layouts/Page.astro';
+import PackageCard from '../../components/PackageCard.astro';
+import LeadForm from '../../components/LeadForm.astro';
+import {
+  packages, packageSavings, packageProcedures, servicesInPackage, getService, resolveItem,
+  PACKAGE_KIND_LABEL, type Package,
+} from '../../data/catalog.ts';
+import { pageForService, type ServicePage } from '../../data/service-pages.ts';
+import { formatPrice, plural, PROCEDURE_FORMS, VISIT_FORMS } from '../../lib/format.ts';
+import { packageTitle, packageDescription } from '../../lib/seo.ts';
+import { packageLd } from '../../lib/schema.ts';
+
+export const getStaticPaths = (() =>
+  packages.map((pkg) => ({ params: { id: pkg.slug }, props: { pkg } }))) satisfies GetStaticPaths;
+
+interface Props {
+  pkg: Package;
+}
+const { pkg } = Astro.props;
+const save = packageSavings(pkg);
+const n = packageProcedures(pkg);
+
+// Ссылки «курс → входящие услуги» (уникальные страницы)
+const servicePagesIn = [
+  ...new Set(servicesInPackage(pkg).map((id) => pageForService(id)).filter((p): p is ServicePage => !!p)),
+];
+/** Ссылка на страницу услуги для строки состава, если её удалось распознать */
+const itemHref = (text: string) => {
+  const r = resolveItem(text);
+  const id = r.serviceId ?? servicesInPackage({ ...pkg, items: [text], steps: [] })[0];
+  const page = id ? pageForService(getService(id).id) : undefined;
+  return page ? `/uslugi/${page.slug}/` : undefined;
+};
+const others = packages.filter((p) => p.kind === pkg.kind && p.id !== pkg.id).slice(0, 3);
+---
+<Page
+  title={packageTitle(pkg)}
+  description={packageDescription(pkg)}
+  h1={pkg.name}
+  lead={`${PACKAGE_KIND_LABEL[pkg.kind]}: ${n} ${plural(n, pkg.steps?.length ? VISIT_FORMS : PROCEDURE_FORMS)} за ${formatPrice(pkg.price)}.`}
+  crumbs={[{ name: 'Комплексы и курсы', href: '/abonementy/' }, { name: pkg.name, href: `/abonementy/${pkg.slug}/` }]}
+  jsonLd={[packageLd(pkg)]}
+  ogType="product"
+  ctaMessage={`Здравствуйте! Хочу записаться: ${pkg.name}.`}
+>
+  <section class="section" aria-labelledby="composition-title">
+    <h2 id="composition-title">{pkg.steps?.length ? 'План визитов' : 'Состав'}</h2>
+    {pkg.steps?.length ? (
+      <ol class="package-steps">
+        {pkg.steps.map((s, i) => <li><span class="muted">Визит {i + 1}:</span> {s}</li>)}
+      </ol>
+    ) : (
+      <ul class="package-items">
+        {pkg.items.map((t) => {
+          const href = itemHref(t);
+          return <li>{href ? <a href={href}>{t}</a> : t}</li>;
+        })}
+      </ul>
+    )}
+  </section>
+
+  <section class="section" aria-labelledby="price-title">
+    <h2 id="price-title">Стоимость</h2>
+    <p class="package-price">
+      <span class="price" data-price={pkg.price}>{formatPrice(pkg.price)}</span>
+      {save && <span class="muted"> — выгода ~{formatPrice(save)} по сравнению с разовыми сеансами</span>}
+    </p>
+    <p class="muted">Срок действия и порядок посещения уточняйте у администратора.</p>
+  </section>
+
+  {servicePagesIn.length > 0 && (
+    <section class="section" aria-labelledby="services-title">
+      <h2 id="services-title">Процедуры в программе</h2>
+      <ul>
+        {servicePagesIn.map((p) => <li><a href={`/uslugi/${p.slug}/`}>{p.name}</a> — {p.summary}</li>)}
+      </ul>
+      <p>Перед началом программы специалист проверит <a href="/faq/#protivopokazaniya">противопоказания</a>.</p>
+    </section>
+  )}
+
+  <LeadForm service={pkg.name} title="Записаться на программу" />
+
+  {others.length > 0 && (
+    <section class="section" aria-labelledby="others-title">
+      <h2 id="others-title">Похожие программы</h2>
+      <div class="cards">
+        {others.map((p) => <PackageCard pkg={p} />)}
+      </div>
+    </section>
+  )}
+</Page>

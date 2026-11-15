@@ -1,0 +1,56 @@
+---
+import { SITE, isTodo, hoursText, socialLinks } from '../config/site.ts';
+import { footerNav } from '../lib/nav.ts';
+import { disclaimer } from '../data/contraindications.ts';
+
+const year = new Date().getFullYear();
+const hoursTodo = SITE.hours.some((h) => isTodo(h.open) || isTodo(h.close));
+const a = SITE.address;
+---
+<footer class="site-footer">
+  <div class="container site-footer__grid">
+    <section aria-labelledby="footer-contacts">
+      <h2 id="footer-contacts" class="site-footer__title">{SITE.name}</h2>
+      <p>{SITE.tagline}</p>
+      <address>
+        <span class:list={[{ todo: isTodo(a.street) }]}>{a.street}</span><br />
+        <span class:list={[{ todo: isTodo(a.locality) }]}>{a.locality}</span><br />
+        <a href={SITE.phoneHref}><span class:list={[{ todo: isTodo(SITE.phone) }]}>{SITE.phone}</span></a>
+        {!isTodo(SITE.email) && <><br /><a href={`mailto:${SITE.email}`}>{SITE.email}</a></>}
+      </address>
+      <p>
+        {hoursText().map((h) => <span class:list={['site-footer__hours', { todo: hoursTodo }]}>{h}</span>)}
+      </p>
+      {socialLinks().length > 0 && (
+        <ul class="site-footer__social">
+          {socialLinks().map((s) => <li><a href={s.href} target="_blank" rel="noopener">{s.name}</a></li>)}
+        </ul>
+      )}
+    </section>
+
+    <nav aria-labelledby="footer-nav">
+      <h2 id="footer-nav" class="site-footer__title">Разделы</h2>
+      <ul>
+        {footerNav.map((i) => <li><a href={i.href}>{i.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <section aria-labelledby="footer-legal">
+      <h2 id="footer-legal" class="site-footer__title">Информация</h2>
+      <p class="site-footer__legal">
+        <span class:list={[{ todo: isTodo(SITE.legal.entity) }]}>{SITE.legal.entity}</span>,
+        ИНН <span class:list={[{ todo: isTodo(SITE.legal.inn) }]}>{SITE.legal.inn}</span>,
+        ОГРН <span class:list={[{ todo: isTodo(SITE.legal.ogrn) }]}>{SITE.legal.ogrn}</span>
+        {!isTodo(SITE.legal.license) && <><br />Лицензия: {SITE.legal.license}</>}
+      </p>
+      <ul>
+        <li><a href="/politika-konfidencialnosti/">Политика конфиденциальности</a></li>
+        <li><a href="/soglasie/">Согласие на обработку персональных данных</a></li>
+      </ul>
+    </section>
+  </div>
+  <div class="container site-footer__bottom">
+    <p class="site-footer__disclaimer"><strong>{disclaimer}</strong></p>
+    <p>Информация на сайте не является публичной офертой. © {year} {SITE.name}</p>
+  </div>
+</footer>

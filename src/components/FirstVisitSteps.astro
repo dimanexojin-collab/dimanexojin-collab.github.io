@@ -1,0 +1,26 @@
+---
+interface Props {
+  title?: string;
+  level?: 'h2' | 'h3';
+}
+const { title = 'Как проходит первый визит', level = 'h2' } = Astro.props;
+const Heading = level;
+
+const steps = [
+  { title: 'Запись', text: 'Позвоните, напишите в мессенджер или оставьте заявку — подберём удобное время.' },
+  { title: 'Консультация', text: 'Специалист уточнит цели, самочувствие и противопоказания, предложит процедуры.' },
+  { title: 'Процедура', text: 'Первая процедура в комфортном темпе; интенсивность подбирается под вас.' },
+  { title: 'План курса', text: 'Составим график визитов и подскажем выгодный абонемент или комплекс.' },
+];
+---
+<section class="first-visit" aria-labelledby="first-visit-title">
+  <Heading id="first-visit-title">{title}</Heading>
+  <ol class="steps">
+    {steps.map((s) => (
+      <li class="steps__item">
+        <h3 class="steps__title">{s.title}</h3>
+        <p>{s.text}</p>
+      </li>
+    ))}
+  </ol>
+</section>
