@@ -30,12 +30,14 @@ export const SITE = {
     region: 'Архангельская область',
     postalCode: 'TODO',
   },
-  geo: { lat: 0, lon: 0 },
+  // Координаты взяты из центра карты в ссылке 2ГИС (приблизительно).
+  geo: { lat: 64.532751, lon: 40.600625 },
+  twoGisUrl: 'https://2gis.ru/arkhangelsk/firm/70000001118109174?m=40.600625%2C64.532751%2F18.24',
   yandexMapsUrl: 'https://yandex.ru/maps/?text=%D0%90%D1%80%D1%85%D0%B0%D0%BD%D0%B3%D0%B5%D0%BB%D1%8C%D1%81%D0%BA%2C%20%D0%9C%D0%BE%D1%81%D0%BA%D0%BE%D0%B2%D1%81%D0%BA%D0%B8%D0%B9%20%D0%BF%D1%80%D0%BE%D1%81%D0%BF%D0%B5%D0%BA%D1%82%2C%2033',
   yandexMapWidget: 'TODO',
   howToGet: 'TODO: ориентиры, парковка',
   hours: [
-    { days: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'] as DayCode[], open: 'TODO 10:00', close: 'TODO 21:00' },
+    { days: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'] as DayCode[], open: '10:00', close: '21:00' },
   ],
   legal: {
     entity: 'TODO: ИП/ООО',

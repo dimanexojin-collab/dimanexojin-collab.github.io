@@ -51,7 +51,7 @@ export function business(): JsonLd {
     currenciesAccepted: currency,
     address,
     geo: geo && { '@type': 'GeoCoordinates', latitude: geo.lat, longitude: geo.lon },
-    hasMap: filled(SITE.yandexMapsUrl),
+    hasMap: filled(SITE.twoGisUrl) ?? filled(SITE.yandexMapsUrl),
     openingHoursSpecification: hours?.map((h) => ({
       '@type': 'OpeningHoursSpecification',
       dayOfWeek: h.days.map((d) => `https://schema.org/${DAY_SCHEMA[d]}`),

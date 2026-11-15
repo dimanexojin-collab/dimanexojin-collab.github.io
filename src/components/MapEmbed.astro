@@ -7,13 +7,13 @@ import { SITE, filled } from '../config/site.ts';
 
 const widget = filled(SITE.yandexMapWidget);
 const mapsUrl = filled(SITE.yandexMapsUrl);
+const twoGis = filled(SITE.twoGisUrl);
 ---
 <div class="map-embed" data-map-src={widget}>
   {widget ? (
     <button type="button" class="btn" data-map-load>Показать карту</button>
-  ) : (
-    <p class="todo">Карта появится после уточнения адреса студии.</p>
-  )}
+  ) : null}
+  {twoGis && <a class="btn" href={twoGis} target="_blank" rel="noopener">Открыть в 2ГИС</a>}
   {mapsUrl && <a href={mapsUrl} target="_blank" rel="noopener">Открыть в Яндекс Картах</a>}
 </div>
 
