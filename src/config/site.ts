@@ -10,7 +10,7 @@
 export type DayCode = 'Mo' | 'Tu' | 'We' | 'Th' | 'Fr' | 'Sa' | 'Su';
 
 export const SITE = {
-  url: 'https://TODO-domain.ru',
+  url: 'https://dimanexojin-collab.github.io', // демо-адрес; заменить на боевой домен
   name: 'Контур',
   tagline: 'Аппаратная коррекция фигуры',
   city: 'Архангельск',
