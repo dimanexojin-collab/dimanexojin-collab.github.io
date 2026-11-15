@@ -89,7 +89,10 @@ export const phoneFilled = (): string | undefined =>
 export const hoursFilled = () =>
   SITE.hours.every((h) => !isTodo(h.open) && !isTodo(h.close)) ? SITE.hours : undefined;
 
-export const geoFilled = () => (SITE.geo.lat !== 0 || SITE.geo.lon !== 0 ? SITE.geo : undefined);
+export const geoFilled = () => {
+  const g: { lat: number; lon: number } = SITE.geo;
+  return g.lat !== 0 || g.lon !== 0 ? g : undefined;
+};
 
 /** Ссылки соцсетей, которые реально заполнены (для sameAs и футера). */
 export const socialLinks = (): { name: string; href: string }[] =>
