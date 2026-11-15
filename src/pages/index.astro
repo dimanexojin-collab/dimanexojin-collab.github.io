@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
+import ServiceRibbon from '../components/ServiceRibbon.astro';
 import ServiceCard from '../components/ServiceCard.astro';
 import PackageCard from '../components/PackageCard.astro';
 import TrialBanner from '../components/TrialBanner.astro';
@@ -27,6 +28,7 @@ const complexes = packages.filter((p) => p.kind === 'complex');
     title={`Аппаратная коррекция фигуры${inCity()}`}
     lead="LPG и Sketch массаж, RF лифтинг, кавитация, прессотерапия и другие аппаратные процедуры. Подберём курс под ваши цели после консультации."
   />
+  <ServiceRibbon />
 
   <section class="section container" aria-labelledby="services-title">
     <h2 id="services-title">Процедуры</h2>

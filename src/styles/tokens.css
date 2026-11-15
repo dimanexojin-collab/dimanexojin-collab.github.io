@@ -16,8 +16,11 @@
 
   --r-card: 22px;
   --r-btn: 999px;
-  --glass: linear-gradient(180deg, #fff 0%, rgba(255, 255, 255, .72) 55%, rgba(247, 246, 244, .8) 100%);
-  --metal: linear-gradient(180deg, #46464b 0%, #2a2a2e 48%, #1d1d20 100%);
+  /* плоские цвета, без градиентов: объём — тенями и рамками */
+  --glass: rgba(255, 255, 255, .78);
+  --metal: #2A2A2E;
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+  --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
   --shadow-card: 0 1px 0 #fff inset, 0 0 0 1px rgba(255, 255, 255, .7), 0 14px 34px -14px rgba(40, 40, 45, .28);
   --shadow-lift: 0 1px 0 #fff inset, 0 0 0 1px rgba(255, 255, 255, .8), 0 22px 40px -14px rgba(40, 40, 45, .32);
   --emboss: 0 1px 0 rgba(255, 255, 255, .95), 0 -1px 0 rgba(0, 0, 0, .22), 0 6px 14px rgba(40, 40, 45, .14);

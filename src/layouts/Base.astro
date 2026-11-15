@@ -9,6 +9,7 @@ import manropeLat from '../assets/fonts/manrope-lat.woff2?url';
 import '../styles/tokens.css';
 import '../styles/base.css';
 import '../styles/components.css';
+import '../styles/motion.css';
 import Seo from '../components/Seo.astro';
 import JsonLd from '../components/JsonLd.astro';
 import Header from '../components/Header.astro';
@@ -47,6 +48,10 @@ const fontFaces = `
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {/* Движение включается классом html.m до первой отрисовки; без JS / при reduced-motion контент виден сразу.
+        Страховка: если модуль анимаций не загрузился за 4 с — класс снимается. */}
+    <script is:inline>(function(d){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;d.classList.add('m');setTimeout(function(){if(!window.__km)d.classList.remove('m')},4000)})(document.documentElement)</script>
+    <noscript><style>html.m *{opacity:1!important;filter:none!important;translate:none!important}</style></noscript>
     <Seo title={title} description={description} canonical={canonical} noindex={noindex} ogImage={ogImage} ogType={ogType} />
     <meta name="theme-color" content="#ECEAE7" />
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
@@ -66,5 +71,9 @@ const fontFaces = `
     </main>
     <Footer />
     <StickyMobileCta />
+    <div class="scroll-progress" aria-hidden="true"></div>
+    <script>
+      import '../scripts/motion.ts';
+    </script>
   </body>
 </html>

@@ -1,0 +1,137 @@
+/*
+ * Движение. Всё, что прячет контент до анимации, включено только классом html.m
+ * (ставит инлайн-скрипт в <head>, если нет prefers-reduced-motion). Без JS контент виден сразу.
+ * Анимируем transform / translate / scale / opacity / filter.
+ */
+
+/* ---------- Hero: слова из размытия в резкость ---------- */
+.hero .w { display: inline-block; }
+html.m .hero .w { animation: m-blur .45s var(--ease-out) both; animation-delay: calc(var(--b, 0ms) + var(--i, 0) * var(--st, 40ms)); }
+html.m .hero h1 { --b: 0ms; --st: 40ms; }
+html.m .hero .lead { --b: 80ms; }
+html.m .hero__rot, html.m .hero__actions { animation: m-blur .5s var(--ease-out) .3s both; }
+@keyframes m-blur { from { opacity: .15; filter: blur(12px); transform: translateY(.35em); } }
+
+/* Ротатор процедур: печать с кареткой, смена через размытие */
+.hero__rot { display: flex; flex-wrap: wrap; align-items: center; gap: 4px var(--s-2); margin: var(--s-2) 0 0; font-size: .95rem; color: var(--graphite-2); }
+.rot {
+  display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 16px 0 10px; border-radius: var(--r-btn);
+  background: #fff; border: 1px solid rgba(42, 42, 46, .12); box-shadow: 0 1px 0 #fff inset, 0 8px 16px -12px rgba(40, 40, 45, .4);
+  font-weight: 700; color: var(--graphite); white-space: nowrap;
+}
+.rot svg { flex: none; width: 18px; height: 18px; }
+/* смена без opacity: только размытие и сдвиг — контраст текста не падает ни в один момент */
+.rot__t { display: inline-block; min-width: 1ch; padding-right: 2px; border-right: 2px solid transparent; transition: filter .3s, transform .3s var(--ease-out); }
+html.m .rot__t { border-right-color: var(--graphite); animation: m-caret 1s steps(1) infinite; }
+.rot__t.is-out { filter: blur(8px); transform: translateY(-5px) scale(.96); }
+@keyframes m-caret { 50% { border-right-color: transparent; } }
+
+/* Балерина: парит + параллакс (переменные --px/--py ставит JS) */
+.hero__media { transform: translate3d(var(--px, 0px), calc(var(--py, 0px) + var(--sy, 0px)), 0); transition: transform .6s var(--ease-out); }
+html.m .hero__media img { animation: m-float 7s ease-in-out infinite; }
+html.m .hero__media::before { animation: m-breathe 7s ease-in-out infinite; }
+@keyframes m-float { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-10px) rotate(1.2deg); } }
+@keyframes m-breathe { 50% { transform: scale(1.04); } }
+
+/* Метка пробного сеанса: пульсирующая точка (transform, не свечение) */
+.pulse { position: relative; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--graphite); }
+.pulse::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 1.5px solid var(--graphite); opacity: 0; }
+html.m .pulse { animation: m-pulse 2.4s var(--ease-out) infinite; }
+html.m .pulse::after { animation: m-ring 2.4s var(--ease-out) infinite; }
+@keyframes m-pulse { 0%, 100% { transform: scale(1); } 15% { transform: scale(1.35); } 30% { transform: scale(1); } }
+@keyframes m-ring { 0% { transform: scale(.6); opacity: .7; } 70%, 100% { transform: scale(2.2); opacity: 0; } }
+
+/* ---------- Лента процедур (3D-карусель) ---------- */
+.ribbon { margin-top: var(--s-6); }
+.ribbon__track {
+  position: relative; list-style: none; margin: 0; padding: 14px 4px 18px; display: flex; gap: 14px;
+  overflow-x: auto; scroll-snap-type: x mandatory; perspective: 900px; scrollbar-width: none;
+}
+.ribbon__track::-webkit-scrollbar { display: none; }
+.ribbon__track > li { flex: none; scroll-snap-align: start; }
+html.m .ribbon__track { overflow: hidden; scroll-snap-type: none; }
+html.m .ribbon__track > li { will-change: transform, filter; }
+.tile {
+  display: grid; justify-items: center; align-content: center; gap: 10px; width: 104px; height: 128px; padding: 10px 8px;
+  border-radius: 24px; background: var(--glass); border: 1px solid #fff; text-decoration: none; text-align: center;
+  box-shadow: 0 1px 0 #fff inset, 0 0 0 1px rgba(42, 42, 46, .06), 0 14px 26px -16px rgba(40, 40, 45, .45);
+  font-size: .78rem; font-weight: 700; line-height: 1.2; transition: transform .45s var(--ease-spring), box-shadow .3s;
+}
+.tile:hover { transform: translateY(-4px); box-shadow: 0 1px 0 #fff inset, 0 0 0 1px rgba(42, 42, 46, .1), 0 20px 30px -16px rgba(40, 40, 45, .5); }
+.tile svg { width: 56px; height: 56px; }
+@media (min-width: 768px) {
+  .ribbon__track { gap: 20px; }
+  .tile { width: 128px; height: 148px; font-size: .85rem; }
+  .tile svg { width: 64px; height: 64px; }
+}
+
+/* ---------- Scroll-reveal ---------- */
+html.m :is(.section > h2, .section > p, .cards > *, .trial-banner, .steps > li, .faq__item, .first-visit > h2, .reviews > h2, .faq > h2, .lead > h2, .lead-form, .lead-fallback, .price-group__title, .cta-band .container, .package-steps > li, .package-items > li, .ribbon) {
+  transition: opacity .7s var(--ease-out) var(--d, 0ms), translate .8s var(--ease-out) var(--d, 0ms), filter .7s var(--ease-out) var(--d, 0ms), transform .35s var(--ease-out);
+}
+html.m :is(.section > h2, .section > p, .cards > *, .trial-banner, .steps > li, .faq__item, .first-visit > h2, .reviews > h2, .faq > h2, .lead > h2, .lead-form, .lead-fallback, .price-group__title, .cta-band .container, .package-steps > li, .package-items > li, .ribbon):not(.in) {
+  opacity: 0; translate: 0 22px; filter: blur(10px);
+}
+/* шапка внутренней страницы: LCP — короткий вход с видимого старта */
+html.m .page-head > * { animation: m-blur .5s var(--ease-out) both; }
+html.m .page-head > * + * { animation-delay: .08s; }
+
+/* Строки прайса: stagger + «рисование» пунктира */
+.price-row { transition: opacity .5s var(--ease-out), translate .6s var(--ease-out); transition-delay: calc(var(--d, 0ms) + 120ms + var(--j, 0) * 70ms); }
+.price-row:nth-child(2) { --j: 1; } .price-row:nth-child(3) { --j: 2; } .price-row:nth-child(4) { --j: 3; } .price-row:nth-child(n+5) { --j: 4; }
+.price-row__leader { transform-origin: 0 50%; transition: scale .9s var(--ease-out) calc(var(--d, 0ms) + 260ms + var(--j, 0) * 70ms); }
+html.m .card:not(.in) .price-row { opacity: 0; translate: -10px 0; }
+html.m .card:not(.in) .price-row__leader { scale: 0 1; }
+.price.is-counting { display: inline-block; text-align: right; }
+
+/* Фильтр прайса: мягкая смена групп */
+.price-tabs [data-panel] { transition: opacity .18s, scale .18s, filter .18s; }
+.price-tabs.is-out [data-panel] { opacity: 0; scale: .985; filter: blur(4px); }
+.price-group.is-enter { animation: m-in .5s var(--ease-out) both; }
+@keyframes m-in { from { opacity: 0; scale: .985; filter: blur(6px); } }
+
+/* Tilt/подъём карточек — только устройства с hover */
+@media (hover: hover) and (pointer: fine) {
+  .card:not(.trial-banner) { transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--ty, 0px)); }
+  .card:not(.trial-banner):hover { --ty: -4px; box-shadow: var(--shadow-lift); }
+}
+
+/* ---------- Ссылки навигации: подчёркивание выезжает ---------- */
+.main-nav > ul > li > a { position: relative; }
+.main-nav > ul > li > a::after { content: ''; position: absolute; left: 12px; right: 12px; bottom: 4px; height: 2px; border-radius: 2px; background: var(--graphite); scale: 0 1; transform-origin: 0 50%; transition: scale .35s var(--ease-out); }
+.main-nav > ul > li > a:hover::after, .main-nav > ul > li > a[aria-current]::after { scale: 1 1; }
+.main-nav .submenu { animation: m-drop .3s var(--ease-out); }
+@keyframes m-drop { from { opacity: 0; translate: 0 -6px; } }
+
+/* ---------- Шапка, прогресс, нижняя панель ---------- */
+.site-header { transition: translate .45s var(--ease-out); view-transition-name: site-header; }
+.site-header.is-hidden { translate: 0 -100%; }
+.scroll-progress { position: fixed; z-index: 50; top: 0; left: 0; right: 0; height: 2px; background: var(--graphite); transform-origin: 0 50%; scale: var(--sp, 0) 1; pointer-events: none; }
+@supports (animation-timeline: scroll()) {
+  .scroll-progress { animation: m-progress linear both; animation-timeline: scroll(root); }
+  @keyframes m-progress { from { scale: 0 1; } to { scale: 1 1; } }
+}
+html.m .sticky-cta { animation: m-up .7s var(--ease-out) .5s both; view-transition-name: sticky-cta; }
+@keyframes m-up { from { translate: 0 calc(100% + 24px); opacity: 0; } }
+
+/* ---------- FAQ: плавная высота ---------- */
+.faq { interpolate-size: allow-keywords; }
+.faq summary { transition: background-color .25s; }
+.faq summary:hover { background-color: rgba(255, 255, 255, .7); }
+.faq details::details-content { block-size: 0; overflow-y: clip; transition: block-size .45s var(--ease-out), content-visibility .45s allow-discrete; }
+.faq details[open]::details-content { block-size: auto; }
+.faq__a { transition: opacity .4s .05s, translate .45s var(--ease-out); }
+.faq details:not([open]) .faq__a { opacity: 0; translate: 0 -6px; }
+
+/* ---------- Переходы между страницами ---------- */
+@view-transition { navigation: auto; }
+::view-transition-old(root) { animation: vt-out .25s var(--ease-out) both; }
+::view-transition-new(root) { animation: vt-in .45s var(--ease-out) both; }
+@keyframes vt-out { to { opacity: 0; filter: blur(6px); } }
+@keyframes vt-in { from { opacity: 0; filter: blur(8px); transform: translateY(8px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
+  .hero__media { transform: none; }
+  .scroll-progress { display: none; }
+}
