@@ -10,6 +10,7 @@ html.m .hero .w { animation: m-blur .45s var(--ease-out) both; animation-delay: 
 html.m .hero h1 { --b: 0ms; --st: 40ms; }
 html.m .hero .lead { --b: 80ms; }
 html.m .hero__rot, html.m .hero__actions { animation: m-blur .5s var(--ease-out) .3s both; }
+html.m .hero.is-off :is(.w, .hero__rot, .hero__actions) { animation: none; }
 @keyframes m-blur { from { opacity: .15; filter: blur(12px); transform: translateY(.35em); } }
 
 /* Ротатор процедур: печать с кареткой, смена через размытие */

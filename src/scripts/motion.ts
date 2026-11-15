@@ -14,8 +14,18 @@ const on = (t: EventTarget, e: string, f: EventListener, o: AddEventListenerOpti
 
 if (root.classList.contains('m')) {
   // ---------- Count-up цены (итоговое значение уже в HTML) ----------
+  const tokens = new WeakMap<HTMLElement, number>();
+  const countReset = (el: HTMLElement) => {
+    // остановить счёт и вернуть итоговое значение (оно же — SEO-текст)
+    tokens.set(el, (tokens.get(el) ?? 0) + 1);
+    if (el.dataset.orig !== undefined) el.textContent = el.dataset.orig;
+    el.classList.remove('is-counting');
+    el.style.minWidth = '';
+  };
   const countUp = (el: HTMLElement) => {
-    const txt = el.textContent ?? '';
+    countReset(el);
+    const txt = (el.dataset.orig ??= el.textContent ?? '');
+    const tok = tokens.get(el);
     const m = txt.match(/\d[\d\s  ]*\d|\d/);
     const target = Number(el.dataset.price);
     if (!m || !target || Number(m[0].replace(/\D/g, '')) !== target) return;
@@ -24,6 +34,7 @@ if (root.classList.contains('m')) {
     el.classList.add('is-counting');
     const t0 = performance.now(), dur = 900;
     const step = (t: number) => {
+      if (tokens.get(el) !== tok) return;
       const p = Math.min(1, (t - t0) / dur);
       const v = Math.round(target * (1 - (1 - p) ** 3));
       el.textContent = p < 1 ? pre + String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + post : txt;
@@ -35,18 +46,35 @@ if (root.classList.contains('m')) {
 
   // ---------- Scroll-reveal со stagger ----------
   const R = '.section>h2,.section>p,.cards>*,.trial-banner,.steps>li,.faq__item,.first-visit>h2,.reviews>h2,.faq>h2,.lead>h2,.lead-form,.lead-fallback,.price-group__title,.cta-band .container,.package-steps>li,.package-items>li,.ribbon';
+  // Анимация проигрывается КАЖДЫЙ раз, когда блок снова входит в экран:
+  // io — запускает (с отступом снизу), reset — сбрасывает, когда блок полностью ушёл с экрана.
+  const prices = (el: HTMLElement) => (el.matches('.price[data-price]') ? [el] : $$('.price[data-price]', el));
   const io = new IntersectionObserver((entries) => {
     let n = 0;
     for (const e of entries) {
       if (!e.isIntersecting) continue;
       const el = e.target as HTMLElement;
-      io.unobserve(el);
+      if (el.classList.contains('in')) continue;
       el.style.setProperty('--d', `${Math.min(n++, 6) * 80}ms`);
       el.classList.add('in');
-      for (const p of $$('.price[data-price]', el)) setTimeout(() => countUp(p), 250 + n * 80);
+      for (const p of prices(el)) setTimeout(() => el.classList.contains('in') && countUp(p), 250 + n * 80);
     }
   }, { rootMargin: '0px 0px -8% 0px' });
-  $$(R).forEach((el) => io.observe(el));
+  const reset = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (e.isIntersecting) continue;
+      const el = e.target as HTMLElement;
+      el.classList.remove('in');
+      for (const p of prices(el)) countReset(p);
+    }
+  });
+  $$(R).forEach((el) => { io.observe(el); reset.observe(el); });
+
+  // Вход hero тоже повторяется: ушёл с экрана → .is-off снимает анимацию → вернулся → играет заново.
+  const heroEl = document.querySelector<HTMLElement>('.hero');
+  if (heroEl) {
+    new IntersectionObserver(([e]) => heroEl.classList.toggle('is-off', !e.isIntersecting)).observe(heroEl);
+  }
 
   // ---------- Ротатор процедур: размытие → печать с кареткой ----------
   for (const rot of $$('[data-rot]')) {
