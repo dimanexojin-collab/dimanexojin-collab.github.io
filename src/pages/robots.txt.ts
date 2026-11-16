@@ -15,6 +15,8 @@ export const GET: APIRoute = () => {
     'Clean-param: utm_source&utm_medium&utm_campaign&utm_term&utm_content&yclid&gclid',
     '',
     `Sitemap: ${absUrl('/sitemap-index.xml')}`,
+    // Второй сайт на этом же домене (проектный сайт GitHub Pages): его robots.txt в подпапке роботы не читают.
+    `Sitemap: ${new URL(SITE.url).origin}/rabochaya-tema/sitemap-index.xml`,
     '',
   ].join('\n');
   return new Response(body, { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
