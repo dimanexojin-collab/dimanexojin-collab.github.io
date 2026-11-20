@@ -4,44 +4,6 @@
  * Анимируем transform / translate / scale / opacity / filter.
  */
 
-/* ---------- Hero: слова из размытия в резкость ---------- */
-.hero .w { display: inline-block; }
-html.m .hero .w { animation: m-blur .45s var(--ease-out) both; animation-delay: calc(var(--b, 0ms) + var(--i, 0) * var(--st, 40ms)); }
-html.m .hero h1 { --b: 0ms; --st: 40ms; }
-html.m .hero .lead { --b: 80ms; }
-html.m .hero__rot, html.m .hero__actions { animation: m-blur .5s var(--ease-out) .3s both; }
-html.m .hero.is-off :is(.w, .hero__rot, .hero__actions) { animation: none; }
-@keyframes m-blur { from { opacity: .15; filter: blur(12px); transform: translateY(.35em); } }
-
-/* Ротатор процедур: печать с кареткой, смена через размытие */
-.hero__rot { display: flex; flex-wrap: wrap; align-items: center; gap: 4px var(--s-2); margin: var(--s-2) 0 0; font-size: .95rem; color: var(--graphite-2); }
-.rot {
-  display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 16px 0 10px; border-radius: var(--r-btn);
-  background: #fff; border: 1px solid rgba(42, 42, 46, .12); box-shadow: 0 1px 0 #fff inset, 0 8px 16px -12px rgba(40, 40, 45, .4);
-  font-weight: 700; color: var(--graphite); white-space: nowrap;
-}
-.rot svg { flex: none; width: 18px; height: 18px; }
-/* смена без opacity: только размытие и сдвиг — контраст текста не падает ни в один момент */
-.rot__t { display: inline-block; min-width: 1ch; padding-right: 2px; border-right: 2px solid transparent; transition: filter .3s, transform .3s var(--ease-out); }
-html.m .rot__t { border-right-color: var(--graphite); animation: m-caret 1s steps(1) infinite; }
-.rot__t.is-out { filter: blur(8px); transform: translateY(-5px) scale(.96); }
-@keyframes m-caret { 50% { border-right-color: transparent; } }
-
-/* Балерина: парит + параллакс (переменные --px/--py ставит JS) */
-.hero__media { transform: translate3d(var(--px, 0px), calc(var(--py, 0px) + var(--sy, 0px)), 0); transition: transform .6s var(--ease-out); }
-html.m .hero__media img { animation: m-float 7s ease-in-out infinite; }
-html.m .hero__media::before { animation: m-breathe 7s ease-in-out infinite; }
-@keyframes m-float { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-10px) rotate(1.2deg); } }
-@keyframes m-breathe { 50% { transform: scale(1.04); } }
-
-/* Метка пробного сеанса: пульсирующая точка (transform, не свечение) */
-.pulse { position: relative; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--graphite); }
-.pulse::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 1.5px solid var(--graphite); opacity: 0; }
-html.m .pulse { animation: m-pulse 2.4s var(--ease-out) infinite; }
-html.m .pulse::after { animation: m-ring 2.4s var(--ease-out) infinite; }
-@keyframes m-pulse { 0%, 100% { transform: scale(1); } 15% { transform: scale(1.35); } 30% { transform: scale(1); } }
-@keyframes m-ring { 0% { transform: scale(.6); opacity: .7; } 70%, 100% { transform: scale(2.2); opacity: 0; } }
-
 /* ---------- Лента процедур (3D-карусель) ---------- */
 .ribbon { margin-top: var(--s-6); }
 .ribbon__track {
@@ -70,9 +32,10 @@ html.m .pulse::after { animation: m-ring 2.4s var(--ease-out) infinite; }
 /* Reveal uses compositor-friendly opacity/translate instead of blurring entire sections. */
 html.m [data-reveal] { transition: opacity .45s var(--ease-out) var(--d, 0ms), translate .5s var(--ease-out) var(--d, 0ms), transform .35s var(--ease-out); }
 html.m [data-reveal]:not(.in) { opacity: 0; translate: 0 16px; }
-html.m .hero h1 .w { animation: none; }
+
 /* шапка внутренней страницы: LCP — короткий вход с видимого старта */
-html.m .page-head > * { animation: m-blur .5s var(--ease-out) both; }
+html.m .page-head > * { animation: m-page-in .45s var(--ease-out) both; }
+@keyframes m-page-in { from { opacity:.7; translate:0 8px; } }
 html.m .page-head > * + * { animation-delay: .08s; }
 
 /* Строки прайса: stagger + «рисование» пунктира */

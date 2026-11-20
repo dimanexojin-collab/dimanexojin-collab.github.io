@@ -26,11 +26,9 @@ for (const track of document.querySelectorAll<HTMLElement>('[data-ribbon]')) {
     if (!animated) return;
     for (let k = 0; k < items.length; k++) {
       const x = mod(nat[k] - off, cycle) - step;
-      const d = Math.max(-1.2, Math.min(1.2, (x + width / 2 - viewport / 2) / (viewport / 2)));
-      const a = Math.abs(d), item = items[k];
-      item.style.transform = `translateX(${(x - nat[k]).toFixed(1)}px) rotateY(${(-d * (mobile.matches ? 18 : 30)).toFixed(1)}deg) scale(${(1 - 0.16 * d * d).toFixed(3)})`;
-      item.style.opacity = Math.max(0.75, 1 - 0.35 * Math.max(0, a - 0.35)).toFixed(2);
-      item.style.filter = !mobile.matches && a > 0.5 ? `blur(${((a - 0.5) * 7).toFixed(1)}px)` : '';
+      const item = items[k];
+      item.style.transform = `translateX(${(x - nat[k]).toFixed(1)}px)`;
+
     }
     syncRange();
   };

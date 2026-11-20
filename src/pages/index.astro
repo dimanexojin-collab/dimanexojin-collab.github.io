@@ -23,32 +23,34 @@ const description = fitDescription(
 );
 const complexes = packages.filter((p) => p.kind === 'complex');
 ---
-<Base title={title} description={description}>
+<Base home title={title} description={description}>
   <Hero
-    title={`Аппаратная коррекция фигуры${inCity()}`}
-    lead="LPG и Sketch массаж, RF лифтинг, кавитация, прессотерапия и другие аппаратные процедуры. Подберём курс под ваши цели после консультации."
+    title="Ваше тело. Ваш комфорт."
+    lead="Аппаратная коррекция фигуры в Архангельске. Подберём процедуры под ваши цели и составим курс после консультации."
   />
   <ServiceRibbon />
 
-  <section class="section container" aria-labelledby="services-title">
-    <h2 id="services-title">Процедуры</h2>
+  <section class="section container home-services" aria-labelledby="services-title">
+    <div class="section-intro"><p class="editorial-label">01 / Процедуры</p><p>Разные технологии.<br />Один подход — внимание к вам.</p></div>
+    <h2 id="services-title">Найдите свою<br />точку равновесия.</h2>
     <div class="cards">
       {servicePages.map((p) => <ServiceCard page={p} />)}
     </div>
     <p><a href="/ceny/">Полный прайс-лист</a></p>
   </section>
 
-  <div class="section container"><TrialBanner /></div>
+  <div class="sunlit-band sunlit-band--peach"><div class="container"><TrialBanner /></div></div>
 
-  <section class="section container" aria-labelledby="complexes-title">
-    <h2 id="complexes-title">Комплексы</h2>
+  <section class="section container home-complexes" aria-labelledby="complexes-title">
+    <p class="editorial-label">02 / Комплексный подход</p>
+    <h2 id="complexes-title">Забота, которая<br />складывается в систему.</h2>
     <div class="cards">
       {complexes.map((p) => <PackageCard pkg={p} />)}
     </div>
     <p><a href="/abonementy/">Все комплексы и курсы</a></p>
   </section>
 
-  <div class="section container"><FirstVisitSteps /></div>
+  <div class="sunlit-band sunlit-band--yellow"><div class="container"><p class="editorial-label">03 / Знакомство со студией</p><FirstVisitSteps /></div></div>
 
   <div class="section container"><Reviews limit={3} /></div>
 
@@ -57,7 +59,7 @@ const complexes = packages.filter((p) => p.kind === 'complex');
     <p><a href="/faq/">Все вопросы и противопоказания</a></p>
   </div>
 
-  <div class="section container"><LeadForm /></div>
+  <div class="sunlit-band sunlit-band--sand"><div class="container"><LeadForm /></div></div>
 
   <CtaBand />
 </Base>

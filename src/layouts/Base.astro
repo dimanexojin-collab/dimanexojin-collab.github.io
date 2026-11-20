@@ -10,11 +10,11 @@ import '../styles/tokens.css';
 import '../styles/base.css';
 import '../styles/components.css';
 import '../styles/motion.css';
+import '../styles/sunlit.css';
 import Seo from '../components/Seo.astro';
 import JsonLd from '../components/JsonLd.astro';
 import Header from '../components/Header.astro';
 import ProcedureIconSprite from '../components/ProcedureIconSprite.astro';
-import AmbientBackground from '../components/AmbientBackground.astro';
 import Footer from '../components/Footer.astro';
 import StickyMobileCta from '../components/StickyMobileCta.astro';
 import { absUrl } from '../lib/seo.ts';
@@ -22,6 +22,7 @@ import { isNoindex } from '../lib/noindex.ts';
 import { business, website, breadcrumbs, type Crumb, type JsonLd as Ld } from '../lib/schema.ts';
 
 export interface Props {
+  home?: boolean;
   title: string;
   description: string;
   /** Цепочка крошек (с главной). Для BreadcrumbList; видимые крошки рисует Page.astro */
@@ -55,7 +56,7 @@ const fontFaces = `
     <script is:inline>(function(d){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;d.classList.add('m');setTimeout(function(){if(!window.__km)d.classList.remove('m')},4000)})(document.documentElement)</script>
     <noscript><style>html.m *{opacity:1!important;filter:none!important;translate:none!important}</style></noscript>
     <Seo title={title} description={description} canonical={canonical} noindex={noindex} ogImage={ogImage} ogType={ogType} />
-    <meta name="theme-color" content="#ECEAE7" />
+    <meta name="theme-color" content="#fcf6ec" />
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -65,8 +66,7 @@ const fontFaces = `
     <style is:inline set:html={fontFaces}></style>
     <JsonLd data={[business(), website(), crumbs && crumbs.length > 1 ? breadcrumbs(crumbs) : null, ...jsonLd]} />
   </head>
-  <body>
-    <AmbientBackground />
+  <body class:list={{ 'home': Astro.props.home }}>
     <ProcedureIconSprite />
     <a class="skip-link" href="#main">Перейти к содержанию</a>
     <Header />

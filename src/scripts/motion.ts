@@ -7,7 +7,6 @@ const root = document.documentElement;
 (window as unknown as { __km: number }).__km = 1;
 
 const mq = (q: string) => matchMedia(q).matches;
-const finePointer = mq('(hover: hover) and (pointer: fine)');
 const small = mq('(max-width: 767px)');
 const $$ = <T extends Element = HTMLElement>(s: string, c: ParentNode = document) => [...c.querySelectorAll<T>(s)];
 const on = (t: EventTarget, e: string, f: EventListener, o: AddEventListenerOptions = { passive: true }) => t.addEventListener(e, f, o);
@@ -75,34 +74,8 @@ if (root.classList.contains('m')) {
     io.observe(el); reset.observe(el);
   });
 
-  // Вход hero тоже повторяется: ушёл с экрана → .is-off снимает анимацию → вернулся → играет заново.
-  const heroEl = document.querySelector<HTMLElement>('.hero');
-  if (heroEl) {
-    new IntersectionObserver(([e]) => heroEl.classList.toggle('is-off', !e.isIntersecting)).observe(heroEl);
-  }
-
-  // ---------- Ротатор процедур: размытие → печать с кареткой ----------
-  for (const rot of $$('[data-rot]')) {
-    const t = rot.querySelector<HTMLElement>('.rot__t');
-    const list = (rot.dataset.rot ?? '').split('|');
-    if (!t || list.length < 2) continue;
-    let i = 0;
-    const type = (s: string, k = 0) => {
-      t.textContent = s.slice(0, k);
-      if (k < s.length) setTimeout(() => type(s, k + 1), 55);
-      else setTimeout(next, 2400);
-    };
-    const next = () => {
-      if (document.hidden) return void setTimeout(next, 1000);
-      t.classList.add('is-out');
-      setTimeout(() => { t.classList.remove('is-out'); type(list[(i = (i + 1) % list.length)]); }, 320);
-    };
-    setTimeout(next, 2600);
-  }
-
   // ---------- Шапка: прячется вниз / появляется вверх; прогресс скролла ----------
   const header = document.querySelector<HTMLElement>('.site-header');
-  const heroMedia = document.querySelector<HTMLElement>('.hero__media');
   const bar = document.querySelector<HTMLElement>('.scroll-progress');
   const cssProgress = CSS.supports('animation-timeline: scroll()');
   let lastY = scrollY, ticking = false;
@@ -116,24 +89,10 @@ if (root.classList.contains('m')) {
         if (y > lastY + 6 && y > 240 && !busy) header.classList.add('is-hidden');
         else if (y < lastY - 6 || y < 120) header.classList.remove('is-hidden');
       }
-      if (heroMedia && y < 900) heroMedia.style.setProperty('--sy', `${(y * 0.06).toFixed(1)}px`);
       if (bar && !cssProgress) bar.style.setProperty('--sp', String(y / Math.max(1, root.scrollHeight - innerHeight)));
       lastY = y;
       ticking = false;
     });
   });
 
-  if (finePointer) {
-    // ---------- Параллакс фигуры в hero ----------
-    const media = document.querySelector<HTMLElement>('.hero__media');
-    const hero = media?.closest<HTMLElement>('.hero');
-    if (media && hero) {
-      on(hero, 'pointermove', (e) => {
-        const r = hero.getBoundingClientRect(), pe = e as PointerEvent;
-        media.style.setProperty('--px', `${(((pe.clientX - r.left) / r.width - 0.5) * -14).toFixed(1)}px`);
-        media.style.setProperty('--py', `${(((pe.clientY - r.top) / r.height - 0.5) * -10).toFixed(1)}px`);
-      });
-      on(hero, 'pointerleave', () => { media.style.removeProperty('--px'); media.style.removeProperty('--py'); });
-    }
-  }
 }

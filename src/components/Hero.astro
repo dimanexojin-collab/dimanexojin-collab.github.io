@@ -1,58 +1,24 @@
 ---
 import { Picture } from 'astro:assets';
-// Фигура без фона (scripts/cutout-hero.mjs); исходник с фоном — ballerina.png
 import ballerina from '../assets/hero/ballerina-cutout.png';
-import { bookingHref } from '../config/site.ts';
-import { trialPromo } from '../data/promos.ts';
-import { getServicePage } from '../data/service-pages.ts';
-import { formatPrice } from '../lib/format.ts';
+import { bookingHref, SITE } from '../config/site.ts';
 import Icon from './Icon.astro';
-
-interface Props {
-  title: string;
-  lead: string;
-}
+interface Props { title: string; lead: string; }
 const { title, lead } = Astro.props;
-
-/** Текст → слова в <span class="w"> (для анимации blur→sharp); пробелы остаются текстом. */
-const words = (s: string) => s.split(' ').filter(Boolean);
-const titleWords = words(title);
-const leadWords = words(lead);
-// Разброс задержек лида ≤ 80 мс — вход всего hero укладывается в ~600 мс
-const leadStep = `${Math.max(2, Math.round(80 / Math.max(1, leadWords.length - 1)))}ms`;
-
-// Ротатор: названия реальных страниц услуг (первое — в HTML, остальные подставляет JS)
-const rotNames = ['lpg-massazh', 'rf-lifting', 'kavitaciya', 'pressoterapiya', 'sketch-massazh']
-  .map((slug) => getServicePage(slug)?.name)
-  .filter((n): n is string => !!n);
 ---
-<section class="hero container" aria-labelledby="hero-title">
-  <div class="hero__text">
-    <h1 id="hero-title">{titleWords.map((w, i) => <Fragment><span class="w" style={`--i:${i}`}>{w}</span>{i < titleWords.length - 1 && ' '}</Fragment>)}</h1>
-    <p class="lead" style={`--st:${leadStep}`}>{leadWords.map((w, i) => <Fragment><span class="w" style={`--i:${i}`}>{w}</span>{i < leadWords.length - 1 && ' '}</Fragment>)}</p>
-    {rotNames.length > 0 && (
-      <p class="hero__rot">
-        Процедуры студии:
-        <span class="rot" data-rot={rotNames.join('|')}>
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M12 3c.6 4.6 2.4 6.4 7 7-4.6.6-6.4 2.4-7 7-.6-4.6-2.4-6.4-7-7 4.6-.6 6.4-2.4 7-7z" /></svg>
-          <span class="rot__t">{rotNames[0]}</span>
-        </span>
-      </p>
-    )}
-    <div class="hero__actions">
-      <a class="btn btn--primary" href={bookingHref()} data-magnetic>Записаться <Icon name="arrow" size={16} /></a>
-      {trialPromo && <a class="btn" href="/akcii/"><span class="pulse" aria-hidden="true"></span>Пробный LPG за {formatPrice(trialPromo.price)}</a>}
+<section class="sunlit-hero" aria-labelledby="hero-title">
+  <div class="sunlit-hero__room" aria-hidden="true"></div>
+  <div class="container sunlit-hero__inner">
+    <p class="sunlit-hero__eyebrow">Студия заботы о теле <span>{SITE.city} / Московский проспект, 33</span></p>
+    <div class="sunlit-hero__wordmark" aria-hidden="true">КОНТУР</div>
+    <div class="sunlit-hero__object">
+      <Picture src={ballerina} formats={['avif', 'webp']} widths={[238, 476]} sizes="(min-width: 768px) 340px, 210px" alt="Скульптурная фигура балерины — символ студии «Контур»" loading="eager" fetchpriority="high" />
     </div>
-  </div>
-  <div class="hero__media">
-    <Picture
-      src={ballerina}
-      formats={['avif', 'webp']}
-      widths={[146, 238]}
-      sizes="(min-width: 768px) 238px, 146px"
-      alt="Силуэт балерины — символ студии «Контур»"
-      loading="eager"
-      fetchpriority="high"
-    />
+    <div class="sunlit-hero__copy">
+      <h1 id="hero-title">{title}</h1>
+      <a class="btn btn--primary" href={bookingHref()}>Начать с консультации <Icon name="arrow" size={16} /></a>
+    </div>
+    <div class="sunlit-hero__note"><span class="editorial-label">В вашем ритме</span><p>{lead}</p><a href="#services-title">Найти свою процедуру <span aria-hidden="true">↓</span></a></div>
+    <div class="sunlit-hero__foot"><span>Технологии. Прикосновение. Забота.</span><span>Листайте, чтобы познакомиться ↓</span></div>
   </div>
 </section>

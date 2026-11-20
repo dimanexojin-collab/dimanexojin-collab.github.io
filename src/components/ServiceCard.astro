@@ -1,4 +1,5 @@
 ---
+import ProcedureIcon from './ProcedureIcon.astro';
 import { getService, isNewAny } from '../data/catalog.ts';
 import type { ServicePage } from '../data/service-pages.ts';
 import { serviceFromPrice } from '../lib/seo.ts';
@@ -14,6 +15,7 @@ const list = page.serviceIds.map(getService);
 const from = serviceFromPrice(page);
 ---
 <article class="card service-card">
+  <div class="service-card__visual" aria-hidden="true"><ProcedureIcon slug={page.slug} /></div>
   <Heading class="service-card__title">
     <a href={`/uslugi/${page.slug}/`}>{page.name}</a>
     {isNewAny(list) && <span class="badge badge--new">Новинка</span>}
