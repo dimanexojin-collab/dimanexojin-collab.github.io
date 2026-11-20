@@ -11,6 +11,8 @@ import '../styles/base.css';
 import '../styles/components.css';
 import '../styles/motion.css';
 import '../styles/sunlit.css';
+import '../styles/living.css';
+import LivingBackground from '../components/LivingBackground.astro';
 import Seo from '../components/Seo.astro';
 import JsonLd from '../components/JsonLd.astro';
 import Header from '../components/Header.astro';
@@ -67,6 +69,7 @@ const fontFaces = `
     <JsonLd data={[business(), website(), crumbs && crumbs.length > 1 ? breadcrumbs(crumbs) : null, ...jsonLd]} />
   </head>
   <body class:list={{ 'home': Astro.props.home }}>
+    <LivingBackground />
     <ProcedureIconSprite />
     <a class="skip-link" href="#main">Перейти к содержанию</a>
     <Header />

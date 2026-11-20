@@ -1,0 +1,29 @@
+---
+// Decorative vector layers: no videos, network requests or animation libraries.
+---
+<div class="living-background" aria-hidden="true">
+  <div class="living-background__light living-background__light--one"></div>
+  <div class="living-background__light living-background__light--two"></div>
+  <svg class="living-background__contour living-background__contour--one" viewBox="0 0 800 800" fill="none">
+    {[0, 1, 2, 3, 4].map((i) => <ellipse cx="400" cy="400" rx={230 + i * 30} ry={310 + i * 15} transform={`rotate(-32 400 400)`} />)}
+  </svg>
+  <svg class="living-background__contour living-background__contour--two" viewBox="0 0 800 800" fill="none">
+    {[0, 1, 2, 3].map((i) => <ellipse cx="400" cy="400" rx={220 + i * 35} ry={300 + i * 20} transform={`rotate(35 400 400)`} />)}
+  </svg>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const preference = matchMedia('(prefers-reduced-motion: reduce)');
+  const sync = () => root.toggleAttribute('data-motion-paused', document.hidden || preference.matches);
+  document.addEventListener('visibilitychange', sync);
+  preference.addEventListener('change', sync);
+  sync();
+
+  // Stop local scenes outside the viewport; the fixed background stays in view.
+  const scenes = document.querySelectorAll('.sunlit-hero, .sunlit-band, .cta-band');
+  const observer = new IntersectionObserver((entries) => {
+    for (const entry of entries) entry.target.classList.toggle('motion-active', entry.isIntersecting);
+  }, { rootMargin: '80px' });
+  scenes.forEach((scene) => observer.observe(scene));
+</script>
