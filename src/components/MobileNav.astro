@@ -1,26 +1,23 @@
 ---
-/** Мобильное меню на нативном <details> — работает без JS. */
 import { SITE, isTodo } from '../config/site.ts';
 import { mainNav } from '../lib/nav.ts';
+import ProcedureMenu from './ProcedureMenu.astro';
 const path = Astro.url.pathname;
+const procedureCount = mainNav.find((item) => item.children)?.children?.length ?? 0;
 ---
 <details class="mobile-nav">
-  <summary aria-label="Открыть меню"><span aria-hidden="true">☰</span> Меню</summary>
+  <summary aria-label="Открыть меню"><span class="mobile-nav__icon" aria-hidden="true"><i></i><i></i></span><span>Меню</span></summary>
   <nav aria-label="Мобильная навигация">
-    <ul>
-      {mainNav.map((item) => (
-        <li>
-          <a href={item.href} aria-current={path === item.href ? 'page' : undefined}>{item.label}</a>
-          {item.children && (
-            <ul>
-              {item.children.map((c) => (
-                <li><a href={c.href} aria-current={path === c.href ? 'page' : undefined}>{c.label}</a></li>
-              ))}
-            </ul>
-          )}
-        </li>
+    <div class="mobile-nav__heading">Меню студии</div>
+    <details class="mobile-services">
+      <summary>Процедуры <span class="mobile-services__count">{procedureCount}</span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m4 6 4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></summary>
+      <ProcedureMenu />
+    </details>
+    <ul class="mobile-nav__pages">
+      {mainNav.filter((item) => !item.children).map((item) => (
+        <li><a href={item.href} aria-current={path === item.href ? 'page' : undefined}>{item.label}</a></li>
       ))}
     </ul>
-    <p><a href={SITE.phoneHref}><span class:list={[{ todo: isTodo(SITE.phone) }]}>{SITE.phone}</span></a></p>
+    <div class="mobile-nav__contact"><span>Поможем выбрать процедуру</span><a href={SITE.phoneHref}><span class:list={[{ todo: isTodo(SITE.phone) }]}>{SITE.phone}</span></a></div>
   </nav>
 </details>

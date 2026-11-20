@@ -1,0 +1,17 @@
+---
+import { servicePages } from '../data/service-pages.ts';
+import ProcedureIcon from './ProcedureIcon.astro';
+const path = Astro.url.pathname;
+---
+<ul class="procedure-menu">
+  {servicePages.map((service) => (
+    <li>
+      <a class="procedure-menu__link" href={`/uslugi/${service.slug}/`} aria-current={path === `/uslugi/${service.slug}/` ? 'page' : undefined}>
+        <ProcedureIcon slug={service.slug} />
+        <span>{service.name}</span>
+        <svg class="procedure-menu__chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m6 4 4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </a>
+    </li>
+  ))}
+</ul>
+<a class="procedure-menu__all" href="/uslugi/">Смотреть все процедуры <span aria-hidden="true">↗</span></a>

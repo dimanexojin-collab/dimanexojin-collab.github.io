@@ -14,6 +14,7 @@ for (const track of document.querySelectorAll<HTMLElement>('[data-ribbon]')) {
   let raf = 0, last = 0;
   let drag: { id: number; x: number; y: number; off: number; moved: boolean } | undefined;
   let suppressClick = false;
+  let pointerFocus = false;
   const mod = (n: number, m: number) => ((n % m) + m) % m;
   const syncRange = () => {
     const progress = animated
@@ -77,7 +78,8 @@ for (const track of document.querySelectorAll<HTMLElement>('[data-ribbon]')) {
   track.addEventListener('pointerenter', () => { hovered = true; });
   track.addEventListener('pointerleave', () => { hovered = false; });
   track.addEventListener('focusin', (event) => {
-    if (!animated) return;
+    // Only keyboard focus repositions a card. Pointer focus must not move a link before click.
+    if (!animated || pointerFocus) return;
     const index = items.findIndex((item) => item.contains(event.target as Node));
     if (index >= 0) { manual = true; off = nat[index] - (viewport - width) / 2 - step; render(); }
   });
@@ -91,6 +93,7 @@ for (const track of document.querySelectorAll<HTMLElement>('[data-ribbon]')) {
   });
   track.addEventListener('dragstart', (event) => event.preventDefault());
   track.addEventListener('pointerdown', (event) => {
+    pointerFocus = true;
     if (!animated || event.button !== 0 || !event.isPrimary) return;
     // A completed swipe cannot leave the next ordinary link tap suppressed.
     suppressClick = false;
@@ -109,6 +112,7 @@ for (const track of document.querySelectorAll<HTMLElement>('[data-ribbon]')) {
     off = drag.off - dx; render();
   });
   const finishDrag = (event: PointerEvent) => {
+    pointerFocus = false;
     if (!drag || drag.id !== event.pointerId) return;
     suppressClick = drag.moved;
     if (track.hasPointerCapture(event.pointerId)) track.releasePointerCapture(event.pointerId);

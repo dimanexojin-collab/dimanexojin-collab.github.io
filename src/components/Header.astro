@@ -5,6 +5,7 @@ import { SITE, isTodo, bookingHref } from '../config/site.ts';
 import { mainNav, isActive } from '../lib/nav.ts';
 import Icon from './Icon.astro';
 import MobileNav from './MobileNav.astro';
+import ProcedureMenu from './ProcedureMenu.astro';
 
 const path = Astro.url.pathname;
 const current = (href: string) => (path === href ? 'page' : isActive(href, path) ? 'true' : undefined);
@@ -23,14 +24,19 @@ const current = (href: string) => (path === href ? 'page' : isActive(href, path)
       <ul>
         {mainNav.map((item) => (
           <li class:list={{ 'has-children': !!item.children }}>
-            <a href={item.href} aria-current={current(item.href)}>{item.label}</a>
-            {item.children && (
-              <ul class="submenu">
-                {item.children.map((c) => (
-                  <li><a href={c.href} aria-current={current(c.href)}>{c.label}</a></li>
-                ))}
-              </ul>
-            )}
+            {item.children ? (
+              <details class="nav-dropdown" data-nav-dropdown>
+                <summary class="nav-summary" aria-current={current(item.href)}>
+                  {item.label}
+                  <svg viewBox="0 0 16 16" aria-hidden="true" fill="none"><path d="m4 6 4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                </summary>
+                <div class="submenu">
+                  <div class="submenu__heading">Выберите процедуру</div>
+                  <ProcedureMenu />
+                </div>
+              </details>
+            ) : <a href={item.href} aria-current={current(item.href)}>{item.label}</a>}
+
           </li>
         ))}
       </ul>
@@ -47,3 +53,23 @@ const current = (href: string) => (path === href ? 'page' : isActive(href, path)
     <MobileNav />
   </div>
 </header>
+
+<script>
+  const menus = [...document.querySelectorAll<HTMLDetailsElement>('[data-nav-dropdown], .mobile-nav')];
+  document.addEventListener('click', (event) => {
+    for (const menu of menus) {
+      if (menu.open && !menu.contains(event.target as Node)) menu.open = false;
+    }
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    for (const menu of menus) {
+      if (!menu.open) continue;
+      menu.open = false;
+      menu.querySelector<HTMLElement>('summary')?.focus();
+    }
+  });
+  matchMedia('(min-width: 1180px)').addEventListener('change', () => {
+    for (const menu of menus) menu.open = false;
+  });
+</script>
