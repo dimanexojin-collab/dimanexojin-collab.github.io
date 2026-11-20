@@ -21,7 +21,7 @@ const glyphs: Record<string, string> = {
 const fallback = '<circle cx="32" cy="32" r="8"/>';
 ---
 <section class="ribbon container" aria-label="Процедуры студии">
-  <ul class="ribbon__track" data-ribbon>
+  <ul class="ribbon__track" id="services-ribbon" data-ribbon tabindex="0" aria-label="Список процедур">
     {servicePages.map((p) => (
       <li>
         <a class="tile" href={`/uslugi/${p.slug}/`}>
@@ -35,4 +35,23 @@ const fallback = '<circle cx="32" cy="32" r="8"/>';
       </li>
     ))}
   </ul>
+  <div class="ribbon__controls" data-ribbon-controls hidden>
+    <label class="ribbon__hint" for="services-position">Листайте процедуры</label>
+    <input
+      class="ribbon__range"
+      id="services-position"
+      data-ribbon-position
+      type="range"
+      min="0"
+      max="1000"
+      step="1"
+      value="0"
+      aria-label="Прокрутить список процедур"
+      aria-controls="services-ribbon"
+    />
+  </div>
 </section>
+
+<script>
+  import '../scripts/ribbon.ts';
+</script>

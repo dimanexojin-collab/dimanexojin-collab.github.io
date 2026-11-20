@@ -95,57 +95,6 @@ if (root.classList.contains('m')) {
     setTimeout(next, 2600);
   }
 
-  // ---------- Лента процедур: бесконечная 3D-карусель ----------
-  for (const track of $$('[data-ribbon]')) {
-    const items = [...track.children] as HTMLElement[];
-    let nat: number[] = [], W = 0, step = 0, w = 0, vw = 0, off = NaN, v = 0, target = small ? 26 : 38;
-    let visible = false, raf = 0, last = 0;
-    const measure = () => {
-      const cs = getComputedStyle(track);
-      items.forEach((it) => (it.style.transform = ''));
-      nat = items.map((it) => it.offsetLeft);
-      w = items[0].offsetWidth;
-      step = w + parseFloat(cs.columnGap || '0');
-      W = step * items.length;
-      vw = track.clientWidth;
-      if (off !== off) off = -step; // первый кадр совпадает с исходной раскладкой
-    };
-    const render = () => {
-      for (let k = 0; k < items.length; k++) {
-        const x = ((((nat[k] - off) % W) + W) % W) - step;
-        const d = Math.max(-1.2, Math.min(1.2, (x + w / 2 - vw / 2) / (vw / 2)));
-        const a = Math.abs(d), it = items[k];
-        it.style.transform = `translateX(${(x - nat[k]).toFixed(1)}px) rotateY(${(-d * (small ? 18 : 30)).toFixed(1)}deg) scale(${(1 - 0.16 * d * d).toFixed(3)})`;
-        // прозрачность у краёв не ниже .75 — подписи плиток сохраняют контраст ≥ 4.5:1
-        it.style.opacity = Math.max(0.75, 1 - 0.35 * Math.max(0, a - 0.35)).toFixed(2);
-        if (!small) it.style.filter = a > 0.5 ? `blur(${((a - 0.5) * 7).toFixed(1)}px)` : '';
-      }
-    };
-    const tick = (t: number) => {
-      const dt = Math.min(0.05, (t - last) / 1000 || 0);
-      last = t;
-      v += (target - v) * Math.min(1, dt * 4);
-      off += v * dt;
-      render();
-      raf = visible && !document.hidden ? requestAnimationFrame(tick) : 0;
-    };
-    const start = () => { if (!raf && visible) { last = performance.now(); raf = requestAnimationFrame(tick); } };
-    measure();
-    render();
-    new IntersectionObserver(([e]) => { visible = e.isIntersecting; start(); }).observe(track);
-    on(document, 'visibilitychange', start);
-    on(window, 'resize', () => { measure(); render(); });
-    const pause = (p: boolean) => () => (target = p ? 0 : small ? 26 : 38);
-    on(track, 'pointerenter', pause(true));
-    on(track, 'pointerleave', pause(false));
-    on(track, 'focusin', (e) => {
-      pause(true)();
-      const k = items.findIndex((it) => it.contains(e.target as Node));
-      if (k >= 0) { off = nat[k] - (vw - w) / 2 - step; render(); }
-    });
-    on(track, 'focusout', pause(false));
-  }
-
   // ---------- Шапка: прячется вниз / появляется вверх; прогресс скролла ----------
   const header = document.querySelector<HTMLElement>('.site-header');
   const heroMedia = document.querySelector<HTMLElement>('.hero__media');

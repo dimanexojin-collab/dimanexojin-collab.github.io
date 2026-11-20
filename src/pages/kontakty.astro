@@ -39,7 +39,7 @@ const hoursTodo = SITE.hours.some((h) => isTodo(h.open) || isTodo(h.close));
 
   <section class="section" aria-labelledby="route-title">
     <h2 id="route-title">Как добраться</h2>
-    <p class:list={[{ todo: isTodo(SITE.howToGet) }]}>{SITE.howToGet}</p>
+    {!isTodo(SITE.howToGet) && <p>{SITE.howToGet}</p>}
     <MapEmbed />
   </section>
 

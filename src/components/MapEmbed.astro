@@ -1,34 +1,34 @@
 ---
-/**
- * Яндекс.Карта: до клика — заглушка-кнопка, iframe грузится только по клику (не влияет на LCP).
- * SITE.yandexMapWidget — src iframe из конструктора карт; пока TODO — показываем ссылку/текст.
- */
-import { SITE, filled } from '../config/site.ts';
+import { SITE, filled, geoFilled } from '../config/site.ts';
 
-const widget = filled(SITE.yandexMapWidget);
 const mapsUrl = filled(SITE.yandexMapsUrl);
 const twoGis = filled(SITE.twoGisUrl);
+const geo = geoFilled();
+const params = geo ? new URLSearchParams({
+  ll: `${geo.lon},${geo.lat}`,
+  pt: `${geo.lon},${geo.lat},pm2rdm`,
+  z: '17',
+  l: 'map',
+  lang: 'ru_RU',
+}) : undefined;
+const widget = filled(SITE.yandexMapWidget)
+  ?? (params ? `https://yandex.ru/map-widget/v1/?${params}` : undefined);
 ---
-<div class="map-embed" data-map-src={widget}>
-  {widget ? (
-    <button type="button" class="btn" data-map-load>Показать карту</button>
-  ) : null}
-  {twoGis && <a class="btn" href={twoGis} target="_blank" rel="noopener">Открыть в 2ГИС</a>}
-  {mapsUrl && <a href={mapsUrl} target="_blank" rel="noopener">Открыть в Яндекс Картах</a>}
+<div class="map-embed">
+  {widget && (
+    <iframe
+      class="map-embed__preview"
+      src={widget}
+      title={`Карта проезда: ${SITE.name}, ${SITE.address.locality}, ${SITE.address.street}`}
+      width="100%"
+      height="360"
+      loading="lazy"
+      allowfullscreen
+      referrerpolicy="no-referrer-when-downgrade"
+    />
+  )}
+  <div class="map-embed__links" aria-label="Открыть маршрут в картах">
+    {twoGis && <a class="btn" href={twoGis} target="_blank" rel="noopener noreferrer">Открыть в 2ГИС</a>}
+    {mapsUrl && <a href={mapsUrl} target="_blank" rel="noopener noreferrer">Открыть в Яндекс Картах</a>}
+  </div>
 </div>
-
-<script>
-    for (const box of document.querySelectorAll<HTMLElement>('[data-map-src]')) {
-      if (!box.dataset.mapSrc) continue;
-      box.querySelector('[data-map-load]')?.addEventListener('click', () => {
-        const iframe = document.createElement('iframe');
-        iframe.src = box.dataset.mapSrc!;
-        iframe.title = 'Карта проезда';
-        iframe.width = '100%';
-        iframe.height = '400';
-        iframe.loading = 'lazy';
-        iframe.style.border = '0';
-        box.replaceChildren(iframe);
-      }, { once: true });
-    }
-</script>
