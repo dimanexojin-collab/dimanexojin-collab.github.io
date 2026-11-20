@@ -2,6 +2,7 @@
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-padding-top: calc(var(--header-h) + 1rem); scroll-behavior: smooth; }
 body {
+  isolation: isolate;
   margin: 0;
   font-family: var(--font);
   font-size: 16px;
@@ -10,11 +11,6 @@ body {
   background: var(--bg);
   overflow-wrap: break-word;
   padding-bottom: 96px;
-}
-/* «жемчужный» фон: плоские однотонные пятна вместо градиентов */
-body::before {
-  content: ''; position: fixed; z-index: -1; pointer-events: none; border-radius: 50%;
-  width: 70vmax; height: 70vmax; left: -28vmax; top: -40vmax; background: var(--bg-2); opacity: .7;
 }
 @media (min-width: 1180px) { body { padding-bottom: 0; } }
 img, svg { max-width: 100%; height: auto; display: block; }

@@ -37,12 +37,12 @@ for (const track of document.querySelectorAll<HTMLElement>('[data-ribbon]')) {
   const tick = (time: number) => {
     const dt = Math.min(0.05, (time - last) / 1000 || 0);
     last = time;
-    if (!manual && !hovered && !section.matches(':focus-within')) off += (mobile.matches ? 26 : 38) * dt;
-    render();
-    raf = animated && visible && !document.hidden ? requestAnimationFrame(tick) : 0;
+    const moving = !manual && !hovered && !section.matches(':focus-within');
+    if (moving) { off += (mobile.matches ? 26 : 38) * dt; render(); }
+    raf = animated && visible && !document.hidden && moving ? requestAnimationFrame(tick) : 0;
   };
   const start = () => {
-    if (!raf && animated && visible && !document.hidden) {
+    if (!raf && animated && visible && !document.hidden && !manual && !hovered && !section.matches(':focus-within')) {
       last = performance.now();
       raf = requestAnimationFrame(tick);
     }
@@ -76,7 +76,8 @@ for (const track of document.querySelectorAll<HTMLElement>('[data-ribbon]')) {
   range.addEventListener('input', setPosition);
   track.addEventListener('scroll', () => { if (!animated) syncRange(); }, { passive: true });
   track.addEventListener('pointerenter', () => { hovered = true; });
-  track.addEventListener('pointerleave', () => { hovered = false; });
+  track.addEventListener('pointerleave', () => { hovered = false; start(); });
+  section.addEventListener('focusout', () => queueMicrotask(start));
   track.addEventListener('focusin', (event) => {
     // Only keyboard focus repositions a card. Pointer focus must not move a link before click.
     if (!animated || pointerFocus) return;

@@ -67,13 +67,10 @@ html.m .pulse::after { animation: m-ring 2.4s var(--ease-out) infinite; }
   .tile svg { width: 64px; height: 64px; }
 }
 
-/* ---------- Scroll-reveal ---------- */
-html.m :is(.section > h2, .section > p, .cards > *, .trial-banner, .steps > li, .faq__item, .first-visit > h2, .reviews > h2, .faq > h2, .lead > h2, .lead-form, .lead-fallback, .price-group__title, .cta-band .container, .package-steps > li, .package-items > li, .ribbon) {
-  transition: opacity .7s var(--ease-out) var(--d, 0ms), translate .8s var(--ease-out) var(--d, 0ms), filter .7s var(--ease-out) var(--d, 0ms), transform .35s var(--ease-out);
-}
-html.m :is(.section > h2, .section > p, .cards > *, .trial-banner, .steps > li, .faq__item, .first-visit > h2, .reviews > h2, .faq > h2, .lead > h2, .lead-form, .lead-fallback, .price-group__title, .cta-band .container, .package-steps > li, .package-items > li, .ribbon):not(.in) {
-  opacity: 0; translate: 0 22px; filter: blur(10px);
-}
+/* Reveal uses compositor-friendly opacity/translate instead of blurring entire sections. */
+html.m [data-reveal] { transition: opacity .45s var(--ease-out) var(--d, 0ms), translate .5s var(--ease-out) var(--d, 0ms), transform .35s var(--ease-out); }
+html.m [data-reveal]:not(.in) { opacity: 0; translate: 0 16px; }
+html.m .hero h1 .w { animation: none; }
 /* шапка внутренней страницы: LCP — короткий вход с видимого старта */
 html.m .page-head > * { animation: m-blur .5s var(--ease-out) both; }
 html.m .page-head > * + * { animation-delay: .08s; }
@@ -92,28 +89,21 @@ html.m .card:not(.in) .price-row__leader { scale: 0 1; }
 .price-group.is-enter { animation: m-in .5s var(--ease-out) both; }
 @keyframes m-in { from { opacity: 0; scale: .985; filter: blur(6px); } }
 
-/* Tilt/подъём карточек — только устройства с hover */
 @media (hover: hover) and (pointer: fine) {
-  .card:not(.trial-banner) { transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--ty, 0px)); }
-  .card:not(.trial-banner):hover { --ty: -4px; box-shadow: var(--shadow-lift); }
+  .card:not(.trial-banner):hover { transform: translateY(-4px); box-shadow: var(--shadow-lift); }
 }
-
-/* ---------- Ссылки навигации: подчёркивание выезжает ---------- */
-.main-nav > ul > li > a { position: relative; }
-.main-nav > ul > li > a::after { content: ''; position: absolute; left: 12px; right: 12px; bottom: 4px; height: 2px; border-radius: 2px; background: var(--graphite); scale: 0 1; transform-origin: 0 50%; transition: scale .35s var(--ease-out); }
-.main-nav > ul > li > a:hover::after, .main-nav > ul > li > a[aria-current]::after { scale: 1 1; }
-.main-nav .submenu { animation: m-drop .3s var(--ease-out); }
-@keyframes m-drop { from { opacity: 0; translate: 0 -6px; } }
+.main-nav .submenu { animation: m-drop .2s var(--ease-out); }
+@keyframes m-drop { from { opacity: 0; transform: translateY(-6px); } }
 
 /* ---------- Шапка, прогресс, нижняя панель ---------- */
-.site-header { transition: translate .45s var(--ease-out); view-transition-name: site-header; }
+.site-header { transition: translate .45s var(--ease-out); }
 .site-header.is-hidden { translate: 0 -100%; }
 .scroll-progress { position: fixed; z-index: 50; top: 0; left: 0; right: 0; height: 2px; background: var(--graphite); transform-origin: 0 50%; scale: var(--sp, 0) 1; pointer-events: none; }
 @supports (animation-timeline: scroll()) {
   .scroll-progress { animation: m-progress linear both; animation-timeline: scroll(root); }
   @keyframes m-progress { from { scale: 0 1; } to { scale: 1 1; } }
 }
-html.m .sticky-cta { animation: m-up .7s var(--ease-out) .5s both; view-transition-name: sticky-cta; }
+html.m .sticky-cta { animation: m-up .7s var(--ease-out) .5s both; }
 @keyframes m-up { from { translate: 0 calc(100% + 24px); opacity: 0; } }
 
 /* ---------- FAQ: плавная высота ---------- */
@@ -124,13 +114,6 @@ html.m .sticky-cta { animation: m-up .7s var(--ease-out) .5s both; view-transiti
 .faq details[open]::details-content { block-size: auto; }
 .faq__a { transition: opacity .4s .05s, translate .45s var(--ease-out); }
 .faq details:not([open]) .faq__a { opacity: 0; translate: 0 -6px; }
-
-/* ---------- Переходы между страницами ---------- */
-@view-transition { navigation: auto; }
-::view-transition-old(root) { animation: vt-out .25s var(--ease-out) both; }
-::view-transition-new(root) { animation: vt-in .45s var(--ease-out) both; }
-@keyframes vt-out { to { opacity: 0; filter: blur(6px); } }
-@keyframes vt-in { from { opacity: 0; filter: blur(8px); transform: translateY(8px); } }
 
 @media (prefers-reduced-motion: reduce) {
   @view-transition { navigation: none; }

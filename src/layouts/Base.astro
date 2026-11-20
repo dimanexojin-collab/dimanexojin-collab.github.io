@@ -13,6 +13,8 @@ import '../styles/motion.css';
 import Seo from '../components/Seo.astro';
 import JsonLd from '../components/JsonLd.astro';
 import Header from '../components/Header.astro';
+import ProcedureIconSprite from '../components/ProcedureIconSprite.astro';
+import AmbientBackground from '../components/AmbientBackground.astro';
 import Footer from '../components/Footer.astro';
 import StickyMobileCta from '../components/StickyMobileCta.astro';
 import { absUrl } from '../lib/seo.ts';
@@ -64,6 +66,8 @@ const fontFaces = `
     <JsonLd data={[business(), website(), crumbs && crumbs.length > 1 ? breadcrumbs(crumbs) : null, ...jsonLd]} />
   </head>
   <body>
+    <AmbientBackground />
+    <ProcedureIconSprite />
     <a class="skip-link" href="#main">Перейти к содержанию</a>
     <Header />
     <main id="main" tabindex="-1">

@@ -1,0 +1,16 @@
+<div class="ambient" aria-hidden="true"><div class="ambient__contour ambient__contour--one"></div><div class="ambient__contour ambient__contour--two"></div></div>
+<style>
+  .ambient { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; contain: strict; }
+  .ambient__contour { position: absolute; width: 84vmax; height: 58vmax; border: 1px solid rgba(117,115,121,.16); border-radius: 48% 52% 64% 36%; }
+  .ambient__contour::before, .ambient__contour::after { content: ''; position: absolute; inset: 24px; border: 1px solid rgba(255,255,255,.7); border-radius: inherit; }
+  .ambient__contour::after { inset: 48px; border-color: rgba(117,115,121,.1); }
+  .ambient__contour--one { top: -26vmax; right: -28vmax; transform: rotate(-24deg); }
+  .ambient__contour--two { bottom: -36vmax; left: -34vmax; width: 76vmax; transform: rotate(28deg); }
+  @media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+    .ambient__contour--one { animation: contour-one 44s ease-in-out infinite alternate; }
+    .ambient__contour--two { animation: contour-two 54s ease-in-out infinite alternate; }
+  }
+  @keyframes contour-one { to { transform: translate(-5vmax, 7vmax) rotate(-4deg); } }
+  @keyframes contour-two { to { transform: translate(5vmax, -6vmax) rotate(10deg); } }
+  @media (max-width: 767px) { .ambient__contour--two { display: none; } }
+</style>

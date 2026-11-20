@@ -32,7 +32,7 @@ const current = (href: string) => (path === href ? 'page' : isActive(href, path)
                 </summary>
                 <div class="submenu">
                   <div class="submenu__heading">Выберите процедуру</div>
-                  <ProcedureMenu />
+                  <ProcedureMenu preview />
                 </div>
               </details>
             ) : <a href={item.href} aria-current={current(item.href)}>{item.label}</a>}

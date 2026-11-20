@@ -1,17 +1,54 @@
 ---
 import { servicePages } from '../data/service-pages.ts';
+import { getService } from '../data/catalog.ts';
+import { serviceFromPrice } from '../lib/seo.ts';
+import { formatMinutes, formatPrice } from '../lib/format.ts';
 import ProcedureIcon from './ProcedureIcon.astro';
+interface Props { preview?: boolean }
+const { preview = false } = Astro.props;
 const path = Astro.url.pathname;
+const selected = servicePages.find((service) => path === `/uslugi/${service.slug}/`) ?? servicePages[0];
 ---
-<ul class="procedure-menu">
-  {servicePages.map((service) => (
-    <li>
-      <a class="procedure-menu__link" href={`/uslugi/${service.slug}/`} aria-current={path === `/uslugi/${service.slug}/` ? 'page' : undefined}>
+<div class:list={['procedure-browser', { 'procedure-browser--preview': preview }]} data-procedure-browser={preview || undefined}>
+  <ul class="procedure-menu">
+    {servicePages.map((service) => (
+      <li>
+        <a class="procedure-menu__link" href={`/uslugi/${service.slug}/`} aria-current={path === `/uslugi/${service.slug}/` ? 'page' : undefined} data-procedure={preview ? service.slug : undefined} aria-describedby={preview ? `procedure-preview-${service.slug}` : undefined} data-preview-active={preview && service.slug === selected.slug || undefined}>
+          <ProcedureIcon slug={service.slug} />
+          <span>{service.name}</span>
+          <svg class="procedure-menu__chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m6 4 4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        </a>
+      </li>
+    ))}
+  </ul>
+  {preview && <div class="procedure-preview" aria-label="Кратко о процедуре">
+    {servicePages.map((service) => (
+      <section class="procedure-preview__panel" id={`procedure-preview-${service.slug}`} data-procedure-panel={service.slug} hidden={service.slug !== selected.slug}>
         <ProcedureIcon slug={service.slug} />
-        <span>{service.name}</span>
-        <svg class="procedure-menu__chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m6 4 4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
-      </a>
-    </li>
-  ))}
-</ul>
-<a class="procedure-menu__all" href="/uslugi/">Смотреть все процедуры <span aria-hidden="true">↗</span></a>
+        <p class="procedure-preview__title">{service.name}</p>
+        <p>{service.summary}</p>
+        <dl>
+          <div><dt>Длительность</dt><dd>{formatMinutes(service.serviceIds.map((id) => getService(id).minutes))}</dd></div>
+          <div><dt>Стоимость</dt><dd>от {formatPrice(serviceFromPrice(service))}{service.priceMode === 'perSession' ? ' за сеанс' : ''}</dd></div>
+        </dl>
+        <a href={`/uslugi/${service.slug}/`}>Подробнее о процедуре</a>
+      </section>
+    ))}
+  </div>}
+  <div class="procedure-menu__footer"><a class="procedure-menu__all" href="/uslugi/">Смотреть все процедуры <span aria-hidden="true">↗</span></a></div>
+</div>
+
+<script>
+  for (const browser of document.querySelectorAll<HTMLElement>('[data-procedure-browser]')) {
+    const show = (target: EventTarget | null) => {
+      if (!(target instanceof Element)) return;
+      const link = target.closest<HTMLElement>('[data-procedure]');
+      const slug = link?.dataset.procedure;
+      if (!slug || link?.hasAttribute('data-preview-active')) return;
+      for (const panel of browser.querySelectorAll<HTMLElement>('[data-procedure-panel]')) panel.hidden = panel.dataset.procedurePanel !== slug;
+      for (const item of browser.querySelectorAll<HTMLElement>('[data-procedure]')) item.toggleAttribute('data-preview-active', item.dataset.procedure === slug);
+    };
+    browser.addEventListener('pointerover', (event) => { if (event.pointerType === 'mouse') show(event.target); });
+    browser.addEventListener('focusin', (event) => show(event.target));
+  }
+</script>

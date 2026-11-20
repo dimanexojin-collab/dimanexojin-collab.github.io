@@ -1,5 +1,5 @@
 /**
- * Движение сайта: reveal, count-up цен, лента процедур, ротатор, шапка, магнитные кнопки, ripple, tilt, параллакс.
+ * Движение сайта: reveal, count-up цен, лента процедур, ротатор, шапка, параллакс.
  * Работает только при html.m (класс ставит инлайн-скрипт в <head>, если нет prefers-reduced-motion).
  * Анимируются transform/opacity/filter; контент всегда есть в HTML.
  */
@@ -68,7 +68,12 @@ if (root.classList.contains('m')) {
       for (const p of prices(el)) countReset(p);
     }
   });
-  $$(R).forEach((el) => { io.observe(el); reset.observe(el); });
+  $$(R).forEach((el) => {
+    el.dataset.reveal = '';
+    const bounds = el.getBoundingClientRect();
+    if (bounds.top < innerHeight && bounds.bottom > 0) el.classList.add('in');
+    io.observe(el); reset.observe(el);
+  });
 
   // Вход hero тоже повторяется: ушёл с экрана → .is-off снимает анимацию → вернулся → играет заново.
   const heroEl = document.querySelector<HTMLElement>('.hero');
@@ -118,44 +123,7 @@ if (root.classList.contains('m')) {
     });
   });
 
-  // ---------- Ripple на кнопках ----------
-  on(document, 'pointerdown', (e) => {
-    const btn = (e.target as Element).closest<HTMLElement>('.btn');
-    if (!btn) return;
-    const r = btn.getBoundingClientRect(), pe = e as PointerEvent;
-    const s = document.createElement('span');
-    s.className = 'ripple';
-    s.style.cssText = `left:${pe.clientX - r.left}px;top:${pe.clientY - r.top}px;--rs:${(Math.max(r.width, r.height) * 2.4) / 16}`;
-    btn.append(s);
-    on(s, 'animationend', () => s.remove());
-  });
-
   if (finePointer) {
-    // ---------- Магнитные главные CTA ----------
-    for (const b of $$('.hero .btn--primary, .cta-band .btn--primary, .site-header .btn--primary, [data-magnetic]')) {
-      on(b, 'pointermove', (e) => {
-        const r = b.getBoundingClientRect(), pe = e as PointerEvent;
-        b.style.setProperty('--mx', `${((pe.clientX - r.left - r.width / 2) * 0.22).toFixed(1)}px`);
-        b.style.setProperty('--my', `${((pe.clientY - r.top - r.height / 2) * 0.3).toFixed(1)}px`);
-      });
-      on(b, 'pointerleave', () => { b.style.removeProperty('--mx'); b.style.removeProperty('--my'); });
-    }
-
-    // ---------- Tilt карточек ----------
-    on(document, 'pointermove', (e) => {
-      const pe = e as PointerEvent;
-      const c = (pe.target as Element).closest?.<HTMLElement>('.card:not(.trial-banner)');
-      if (!c) return;
-      const r = c.getBoundingClientRect();
-      c.style.setProperty('--ry', `${(((pe.clientX - r.left) / r.width - 0.5) * 5).toFixed(2)}deg`);
-      c.style.setProperty('--rx', `${((0.5 - (pe.clientY - r.top) / r.height) * 5).toFixed(2)}deg`);
-    });
-    on(document, 'pointerout', (e) => {
-      const c = (e.target as Element).closest?.<HTMLElement>('.card');
-      const to = (e as PointerEvent).relatedTarget as Node | null;
-      if (c && !(to && c.contains(to))) { c.style.removeProperty('--rx'); c.style.removeProperty('--ry'); }
-    });
-
     // ---------- Параллакс фигуры в hero ----------
     const media = document.querySelector<HTMLElement>('.hero__media');
     const hero = media?.closest<HTMLElement>('.hero');

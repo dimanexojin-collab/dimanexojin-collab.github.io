@@ -11,8 +11,8 @@ export default defineConfig({
   compressHTML: true,
   build: {
     format: 'directory',
-    // CSS ~18 КБ (≈4 КБ brotli) — инлайним, чтобы не было render-blocking запроса
-    inlineStylesheets: 'always',
+    // Общие стили кешируются между страницами вместо повторения в каждом HTML.
+    inlineStylesheets: 'never',
   },
   integrations: [
     sitemap({
