@@ -4,7 +4,7 @@
  * Анимируем transform / translate / scale / opacity / filter.
  */
 
-/* ---------- Лента процедур (3D-карусель) ---------- */
+/* ---------- Горизонтальная лента процедур ---------- */
 .ribbon { margin-top: var(--s-6); }
 .ribbon__track {
   position: relative; list-style: none; margin: 0; padding: 14px 4px 18px; display: flex; gap: 14px;
@@ -29,28 +29,10 @@
   .tile svg { width: 64px; height: 64px; }
 }
 
-/* Reveal uses compositor-friendly opacity/translate instead of blurring entire sections. */
-html.m [data-reveal] { transition: opacity .45s var(--ease-out) var(--d, 0ms), translate .5s var(--ease-out) var(--d, 0ms), transform .35s var(--ease-out); }
-html.m [data-reveal]:not(.in) { opacity: 0; translate: 0 16px; }
-
-/* шапка внутренней страницы: LCP — короткий вход с видимого старта */
+/* Entry and price-row animations are owned by scripts/motion.ts. */
 html.m .page-head > * { animation: m-page-in .45s var(--ease-out) both; }
 @keyframes m-page-in { from { opacity:.7; translate:0 8px; } }
-html.m .page-head > * + * { animation-delay: .08s; }
-
-/* Строки прайса: stagger + «рисование» пунктира */
-.price-row { transition: opacity .5s var(--ease-out), translate .6s var(--ease-out); transition-delay: calc(var(--d, 0ms) + 120ms + var(--j, 0) * 70ms); }
-.price-row:nth-child(2) { --j: 1; } .price-row:nth-child(3) { --j: 2; } .price-row:nth-child(4) { --j: 3; } .price-row:nth-child(n+5) { --j: 4; }
-.price-row__leader { transform-origin: 0 50%; transition: scale .9s var(--ease-out) calc(var(--d, 0ms) + 260ms + var(--j, 0) * 70ms); }
-html.m .card:not(.in) .price-row { opacity: 0; translate: -10px 0; }
-html.m .card:not(.in) .price-row__leader { scale: 0 1; }
-.price.is-counting { display: inline-block; text-align: right; }
-
-/* Фильтр прайса: мягкая смена групп */
-.price-tabs [data-panel] { transition: opacity .18s, scale .18s, filter .18s; }
-.price-tabs.is-out [data-panel] { opacity: 0; scale: .985; filter: blur(4px); }
-.price-group.is-enter { animation: m-in .5s var(--ease-out) both; }
-@keyframes m-in { from { opacity: 0; scale: .985; filter: blur(6px); } }
+html.m .page-head > * + * { animation-delay:.08s; }
 
 @media (hover: hover) and (pointer: fine) {
   .card:not(.trial-banner):hover { transform: translateY(-4px); box-shadow: var(--shadow-lift); }
@@ -59,8 +41,7 @@ html.m .card:not(.in) .price-row__leader { scale: 0 1; }
 @keyframes m-drop { from { opacity: 0; transform: translateY(-6px); } }
 
 /* ---------- Шапка, прогресс, нижняя панель ---------- */
-.site-header { transition: translate .45s var(--ease-out); }
-.site-header.is-hidden { translate: 0 -100%; }
+
 .scroll-progress { position: fixed; z-index: 50; top: 0; left: 0; right: 0; height: 2px; background: var(--graphite); transform-origin: 0 50%; scale: var(--sp, 0) 1; pointer-events: none; }
 @supports (animation-timeline: scroll()) {
   .scroll-progress { animation: m-progress linear both; animation-timeline: scroll(root); }

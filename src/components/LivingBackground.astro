@@ -2,6 +2,7 @@
 // Decorative vector layers: no videos, network requests or animation libraries.
 ---
 <div class="living-background" aria-hidden="true">
+  <div class="living-background__veil"></div>
   <div class="living-background__light living-background__light--one"></div>
   <div class="living-background__light living-background__light--two"></div>
   <svg class="living-background__contour living-background__contour--one" viewBox="0 0 800 800" fill="none">
@@ -21,7 +22,7 @@
   sync();
 
   // Stop local scenes outside the viewport; the fixed background stays in view.
-  const scenes = document.querySelectorAll('.sunlit-hero, .sunlit-band, .cta-band');
+  const scenes = document.querySelectorAll('.sunlit-hero, .sunlit-band, .cta-band, .home-services');
   const observer = new IntersectionObserver((entries) => {
     for (const entry of entries) entry.target.classList.toggle('motion-active', entry.isIntersecting);
   }, { rootMargin: '80px' });

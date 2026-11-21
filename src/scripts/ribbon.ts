@@ -1,131 +1,124 @@
-/** The same position control works with the animated ribbon and native reduced-motion scrolling. */
+/** A finite native scroller: smooth range control, touch inertia and no loop seam. */
 for (const track of document.querySelectorAll<HTMLElement>('[data-ribbon]')) {
   const section = track.closest<HTMLElement>('.ribbon');
   const range = section?.querySelector<HTMLInputElement>('[data-ribbon-position]');
   const controls = section?.querySelector<HTMLElement>('[data-ribbon-controls]');
-  const items = [...track.children] as HTMLElement[];
-  if (!section || !range || !controls || !items.length) continue;
-  controls.hidden = false;
-
-  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
-  const mobile = matchMedia('(max-width: 767px)');
-  let animated = false, visible = false, manual = false, hovered = false;
-  let nat: number[] = [], width = 0, step = 1, cycle = 1, viewport = 1, off = 0;
-  let raf = 0, last = 0;
-  let drag: { id: number; x: number; y: number; off: number; moved: boolean } | undefined;
+  if (!section || !range || !controls) continue;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const small = matchMedia('(max-width: 767px)');
+  let visible = false, manual = false, hovered = false, rangeHeld = false;
+  let maximum = 0, direction = 1, raf = 0, last = 0, position = 0;
+  let target: number | null = null;
+  let drag: { id: number; x: number; y: number; left: number; moved: boolean } | null = null;
   let suppressClick = false;
-  let pointerFocus = false;
-  const mod = (n: number, m: number) => ((n % m) + m) % m;
-  const syncRange = () => {
-    const progress = animated
-      ? Math.min(1, mod(off + step, cycle) / Math.max(1, cycle - step))
-      : track.scrollLeft / Math.max(1, track.scrollWidth - track.clientWidth);
-    range.value = String(Math.round(progress * 1000));
+  const sync = () => {
+    if (!rangeHeld && target === null) range.value = String(Math.round((manual ? track.scrollLeft : position) / Math.max(1, maximum) * 1000));
   };
-  const render = () => {
-    if (!animated) return;
-    for (let k = 0; k < items.length; k++) {
-      const x = mod(nat[k] - off, cycle) - step;
-      const item = items[k];
-      item.style.transform = `translateX(${(x - nat[k]).toFixed(1)}px)`;
-
-    }
-    syncRange();
-  };
+  const autoplay = () => !manual && !hovered && !section.matches(':focus-within') && !reduced.matches;
   const tick = (time: number) => {
-    const dt = Math.min(0.05, (time - last) / 1000 || 0);
+    raf = 0;
+    if (!visible || document.hidden || maximum <= 0) return;
+    const dt = Math.min(.05, (time - last) / 1000 || 1 / 60);
     last = time;
-    const moving = !manual && !hovered && !section.matches(':focus-within');
-    if (moving) { off += (mobile.matches ? 26 : 38) * dt; render(); }
-    raf = animated && visible && !document.hidden && moving ? requestAnimationFrame(tick) : 0;
+    if (target !== null) {
+      const distance = target - position;
+      if (Math.abs(distance) < .75 || reduced.matches) {
+        position = target;
+        track.scrollLeft = position;
+        target = null;
+      } else { position += distance * (1 - Math.exp(-dt * 16)); track.scrollLeft = position; }
+    } else if (autoplay()) {
+      const speed = Math.min(small.matches ? 18 : 24, maximum / 24);
+      const next = position + direction * speed * dt;
+      position = Math.max(0, Math.min(maximum, next));
+      track.scrollLeft = position;
+      // Reverse smoothly at the end instead of snapping the thumb from 100% to 0%.
+      if (next >= maximum) direction = -1;
+      else if (next <= 0) direction = 1;
+    }
+    sync();
+    if (target !== null || autoplay()) raf = requestAnimationFrame(tick);
   };
   const start = () => {
-    if (!raf && animated && visible && !document.hidden && !manual && !hovered && !section.matches(':focus-within')) {
+    if (!raf && visible && !document.hidden && maximum > 0 && (target !== null || autoplay())) {
       last = performance.now();
       raf = requestAnimationFrame(tick);
     }
   };
-  const measure = () => {
-    const progress = animated ? mod(off + step, cycle) / Math.max(1, cycle - step) : Number(range.value) / 1000;
-    cancelAnimationFrame(raf); raf = 0;
-    items.forEach((item) => { item.style.transform = ''; item.style.opacity = ''; item.style.filter = ''; });
-    track.classList.remove('is-animated');
-    animated = !reducedMotion.matches;
-    if (animated) {
-      track.scrollLeft = 0;
-      nat = items.map((item) => item.offsetLeft);
-      width = items[0].offsetWidth;
-      step = width + parseFloat(getComputedStyle(track).columnGap || '0');
-      cycle = step * items.length;
-      viewport = track.clientWidth;
-      off = Math.min(1, progress) * (cycle - step) - step;
-      track.classList.add('is-animated');
-      render(); start();
-    } else {
-      track.scrollLeft = Math.min(1, progress) * Math.max(0, track.scrollWidth - track.clientWidth);
-      syncRange();
-    }
-  };
   const setPosition = () => {
     manual = true;
-    if (animated) { off = Number(range.value) / 1000 * (cycle - step) - step; render(); }
-    else track.scrollLeft = Number(range.value) / 1000 * Math.max(0, track.scrollWidth - track.clientWidth);
+    position = track.scrollLeft;
+    target = Number(range.value) / 1000 * maximum;
+    if (reduced.matches) { track.scrollLeft = target; target = null; }
+    else start();
   };
   range.addEventListener('input', setPosition);
-  track.addEventListener('scroll', () => { if (!animated) syncRange(); }, { passive: true });
-  track.addEventListener('pointerenter', () => { hovered = true; });
+  range.addEventListener('pointerdown', () => { rangeHeld = true; manual = true; });
+  window.addEventListener('pointerup', () => { rangeHeld = false; sync(); }, { passive: true });
+  window.addEventListener('pointercancel', () => { rangeHeld = false; sync(); }, { passive: true });
+  track.addEventListener('scroll', () => {
+    if (manual && target === null) position = track.scrollLeft;
+    sync();
+  }, { passive: true });
+  track.addEventListener('focusin', () => { manual = true; position = track.scrollLeft; });
+  track.addEventListener('pointerenter', (event) => { if (event.pointerType === 'mouse') hovered = true; });
   track.addEventListener('pointerleave', () => { hovered = false; start(); });
   section.addEventListener('focusout', () => queueMicrotask(start));
-  track.addEventListener('focusin', (event) => {
-    // Only keyboard focus repositions a card. Pointer focus must not move a link before click.
-    if (!animated || pointerFocus) return;
-    const index = items.findIndex((item) => item.contains(event.target as Node));
-    if (index >= 0) { manual = true; off = nat[index] - (viewport - width) / 2 - step; render(); }
-  });
   track.addEventListener('keydown', (event) => {
     if (event.target !== track || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
-    event.preventDefault(); manual = true;
-    if (event.key === 'Home') range.value = '0';
-    else if (event.key === 'End') range.value = '1000';
-    else range.value = String(Math.max(0, Math.min(1000, Number(range.value) + (event.key === 'ArrowRight' ? 1 : -1) * 1000 / (items.length - 1))));
+    event.preventDefault();
+    range.value = event.key === 'Home' ? '0' : event.key === 'End' ? '1000'
+      : String(Math.max(0, Math.min(1000, Number(range.value) + (event.key === 'ArrowRight' ? 100 : -100))));
     setPosition();
   });
-  track.addEventListener('dragstart', (event) => event.preventDefault());
   track.addEventListener('pointerdown', (event) => {
-    pointerFocus = true;
-    if (!animated || event.button !== 0 || !event.isPrimary) return;
-    // A completed swipe cannot leave the next ordinary link tap suppressed.
-    suppressClick = false;
-    drag = { id: event.pointerId, x: event.clientX, y: event.clientY, off, moved: false };
+    manual = true; target = null; position = track.scrollLeft; suppressClick = false;
+    // Touch uses the browser's native horizontal scrolling and inertia.
+    if (event.pointerType !== 'mouse' || event.button !== 0) return;
+    drag = { id: event.pointerId, x: event.clientX, y: event.clientY, left: track.scrollLeft, moved: false };
   });
   track.addEventListener('pointermove', (event) => {
     if (!drag || drag.id !== event.pointerId) return;
     const dx = event.clientX - drag.x, dy = event.clientY - drag.y;
     if (!drag.moved) {
-      if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 8) { drag = undefined; return; }
+      if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 8) { drag = null; return; }
       if (Math.abs(dx) < 8) return;
-      drag.moved = true; manual = true;
+      drag.moved = true;
       track.setPointerCapture(event.pointerId);
       track.classList.add('is-dragging');
     }
-    off = drag.off - dx; render();
+    track.scrollLeft = drag.left - dx;
   });
-  const finishDrag = (event: PointerEvent) => {
-    pointerFocus = false;
+  const finish = (event: PointerEvent) => {
     if (!drag || drag.id !== event.pointerId) return;
     suppressClick = drag.moved;
     if (track.hasPointerCapture(event.pointerId)) track.releasePointerCapture(event.pointerId);
-    track.classList.remove('is-dragging'); drag = undefined;
+    track.classList.remove('is-dragging');
+    drag = null;
   };
-  track.addEventListener('pointerup', finishDrag);
-  track.addEventListener('pointercancel', finishDrag);
+  track.addEventListener('pointerup', finish);
+  track.addEventListener('pointercancel', finish);
+  track.addEventListener('dragstart', (event) => event.preventDefault());
   track.addEventListener('click', (event) => {
     if (suppressClick) { event.preventDefault(); suppressClick = false; }
   }, true);
-  new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; start(); }).observe(track);
-  new ResizeObserver(measure).observe(track);
-  reducedMotion.addEventListener('change', measure);
-  document.addEventListener('visibilitychange', start);
-  measure();
+  new ResizeObserver(() => {
+    maximum = Math.max(0, track.scrollWidth - track.clientWidth);
+    position = track.scrollLeft;
+    controls.hidden = maximum < 1;
+    if (target !== null) target = Math.min(maximum, target);
+    sync(); start();
+  }).observe(track);
+  new IntersectionObserver(([entry]) => {
+    visible = entry.isIntersecting;
+    if (!visible) { cancelAnimationFrame(raf); raf = 0; }
+    else start();
+  }).observe(track);
+  reduced.addEventListener('change', () => { if (target !== null) setPosition(); start(); });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { cancelAnimationFrame(raf); raf = 0; }
+    else start();
+  });
+  track.classList.add('is-native');
 }
 

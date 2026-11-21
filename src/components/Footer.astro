@@ -1,11 +1,11 @@
 ---
+import AddressLink from './AddressLink.astro';
 import { SITE, isTodo, hoursText, socialLinks } from '../config/site.ts';
 import { footerNav } from '../lib/nav.ts';
 import { disclaimer } from '../data/contraindications.ts';
 
 const year = new Date().getFullYear();
 const hoursTodo = SITE.hours.some((h) => isTodo(h.open) || isTodo(h.close));
-const a = SITE.address;
 ---
 <footer class="site-footer">
   <div class="container site-footer__grid">
@@ -13,8 +13,7 @@ const a = SITE.address;
       <h2 id="footer-contacts" class="site-footer__title">{SITE.name}</h2>
       <p>{SITE.tagline}</p>
       <address>
-        <span class:list={[{ todo: isTodo(a.street) }]}>{a.street}</span><br />
-        <span class:list={[{ todo: isTodo(a.locality) }]}>{a.locality}</span><br />
+        <AddressLink multiline /><br />
         <a href={SITE.phoneHref}><span class:list={[{ todo: isTodo(SITE.phone) }]}>{SITE.phone}</span></a>
         {!isTodo(SITE.email) && <><br /><a href={`mailto:${SITE.email}`}>{SITE.email}</a></>}
       </address>

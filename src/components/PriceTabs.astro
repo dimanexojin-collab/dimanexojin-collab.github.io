@@ -30,22 +30,10 @@ const list = groups();
     const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-filter]')];
     const panels = [...root.querySelectorAll<HTMLElement>('[data-panel]')];
     if (!filters) continue;
-    const apply = (key: string, animate: boolean) => {
-      root.classList.remove('is-out');
-      panels.forEach((p) => {
-        p.hidden = key !== 'all' && p.dataset.panel !== key;
-        p.classList.remove('is-enter');
-        if (animate && !p.hidden) { void p.offsetWidth; p.classList.add('is-enter'); }
-      });
-    };
-    let timer = 0;
     const select = (key: string, animate = false) => {
       buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filter === key)));
-      // мягкая смена (fade/scale/blur) — только при включённом движении (html.m)
-      if (!animate || !document.documentElement.classList.contains('m')) return apply(key, false);
-      clearTimeout(timer);
-      root.classList.add('is-out');
-      timer = window.setTimeout(() => apply(key, true), 180);
+      panels.forEach((panel) => { panel.hidden = key !== 'all' && panel.dataset.panel !== key; });
+      if (animate) document.dispatchEvent(new CustomEvent('kontur:reveal', { detail: { scope: root } }));
     };
     filters.hidden = false;
     filters.addEventListener('click', (e) => {

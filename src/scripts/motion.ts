@@ -1,98 +1,90 @@
-/**
- * Движение сайта: reveal, count-up цен, лента процедур, ротатор, шапка, параллакс.
- * Работает только при html.m (класс ставит инлайн-скрипт в <head>, если нет prefers-reduced-motion).
- * Анимируются transform/opacity/filter; контент всегда есть в HTML.
- */
+export {};
+/** One visibility controller owns replay; content is never hidden while waiting. */
 const root = document.documentElement;
 (window as unknown as { __km: number }).__km = 1;
-
-const mq = (q: string) => matchMedia(q).matches;
-const small = mq('(max-width: 767px)');
-const $$ = <T extends Element = HTMLElement>(s: string, c: ParentNode = document) => [...c.querySelectorAll<T>(s)];
-const on = (t: EventTarget, e: string, f: EventListener, o: AddEventListenerOptions = { passive: true }) => t.addEventListener(e, f, o);
-
-if (root.classList.contains('m')) {
-  // ---------- Count-up цены (итоговое значение уже в HTML) ----------
-  const tokens = new WeakMap<HTMLElement, number>();
-  const countReset = (el: HTMLElement) => {
-    // остановить счёт и вернуть итоговое значение (оно же — SEO-текст)
-    tokens.set(el, (tokens.get(el) ?? 0) + 1);
-    if (el.dataset.orig !== undefined) el.textContent = el.dataset.orig;
-    el.classList.remove('is-counting');
-    el.style.minWidth = '';
-  };
-  const countUp = (el: HTMLElement) => {
-    countReset(el);
-    const txt = (el.dataset.orig ??= el.textContent ?? '');
-    const tok = tokens.get(el);
-    const m = txt.match(/\d[\d\s  ]*\d|\d/);
-    const target = Number(el.dataset.price);
-    if (!m || !target || Number(m[0].replace(/\D/g, '')) !== target) return;
-    const pre = txt.slice(0, m.index), post = txt.slice(m.index! + m[0].length);
-    el.style.minWidth = `${el.getBoundingClientRect().width}px`;
-    el.classList.add('is-counting');
-    const t0 = performance.now(), dur = 900;
-    const step = (t: number) => {
-      if (tokens.get(el) !== tok) return;
-      const p = Math.min(1, (t - t0) / dur);
-      const v = Math.round(target * (1 - (1 - p) ** 3));
-      el.textContent = p < 1 ? pre + String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + post : txt;
-      if (p < 1) requestAnimationFrame(step);
-      else { el.classList.remove('is-counting'); el.style.minWidth = ''; }
-    };
-    requestAnimationFrame(step);
-  };
-
-  // ---------- Scroll-reveal со stagger ----------
-  const R = '.section>h2,.section>p,.cards>*,.trial-banner,.steps>li,.faq__item,.first-visit>h2,.reviews>h2,.faq>h2,.lead>h2,.lead-form,.lead-fallback,.price-group__title,.cta-band .container,.package-steps>li,.package-items>li,.ribbon';
-  // Анимация проигрывается КАЖДЫЙ раз, когда блок снова входит в экран:
-  // io — запускает (с отступом снизу), reset — сбрасывает, когда блок полностью ушёл с экрана.
-  const prices = (el: HTMLElement) => (el.matches('.price[data-price]') ? [el] : $$('.price[data-price]', el));
-  const io = new IntersectionObserver((entries) => {
-    let n = 0;
-    for (const e of entries) {
-      if (!e.isIntersecting) continue;
-      const el = e.target as HTMLElement;
-      if (el.classList.contains('in')) continue;
-      el.style.setProperty('--d', `${Math.min(n++, 6) * 80}ms`);
-      el.classList.add('in');
-      for (const p of prices(el)) setTimeout(() => el.classList.contains('in') && countUp(p), 250 + n * 80);
-    }
-  }, { rootMargin: '0px 0px -8% 0px' });
-  const reset = new IntersectionObserver((entries) => {
-    for (const e of entries) {
-      if (e.isIntersecting) continue;
-      const el = e.target as HTMLElement;
+const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+const selector = '.section>h2,.section>p,.section-intro,.cards>*,.trial-banner,.steps>li,.faq__item,.first-visit>h2,.reviews>h2,.faq>h2,.lead>h2,.lead-form,.lead-fallback,.price-group__title,.price-tabs__filters,.cta-band .container,.package-steps>li,.package-items>li';
+const elements = [...document.querySelectorAll<HTMLElement>(selector)];
+const inside = new Set<HTMLElement>();
+const running = new Map<HTMLElement, Animation[]>();
+const stop = (el: HTMLElement) => {
+  running.get(el)?.forEach((a) => a.cancel());
+  running.delete(el);
+};
+const isVisible = (el: HTMLElement) => {
+  if (el.closest('[hidden]')) return false;
+  const r = el.getBoundingClientRect();
+  return r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < innerHeight;
+};
+const play = (el: HTMLElement, order = 0) => {
+  stop(el);
+  el.classList.add('in');
+  if (reduced.matches) return;
+  // The observed box only fades. Moving that box caused observer-boundary flicker.
+  const delay = Math.min(order, 4) * 45;
+  const animations = [el.animate([{ opacity: .48 }, { opacity: 1 }], {
+    duration: 480, delay, easing: 'ease-out', fill: 'backwards',
+  })];
+  const children = el.matches('.card,.steps__item,.price-tabs__filters')
+    ? [...el.children].filter((e): e is HTMLElement => e instanceof HTMLElement && !e.matches('h1,h2,h3,h4,.price-list')) : [];
+  const rows = [...el.querySelectorAll<HTMLElement>('.price-row')];
+  [...children, ...rows].forEach((child, index) => {
+    animations.push(child.animate([
+      { opacity: .55, transform: 'translateY(10px)' },
+      { opacity: 1, transform: 'translateY(0)' },
+    ], { duration: 440, fill: 'backwards', delay: delay + Math.min(index, 5) * 40, easing: 'cubic-bezier(.22,1,.36,1)' }));
+  });
+  running.set(el, animations);
+  Promise.all(animations.map((a) => a.finished)).then(() => {
+    if (running.get(el) === animations) running.delete(el);
+  }).catch(() => {});
+};
+const observer = new IntersectionObserver((entries) => {
+  let order = 0;
+  for (const entry of entries) {
+    const el = entry.target as HTMLElement;
+    if (entry.isIntersecting && !el.closest('[hidden]')) {
+      if (!inside.has(el)) { inside.add(el); play(el, order++); }
+    } else {
+      inside.delete(el);
+      stop(el);
       el.classList.remove('in');
-      for (const p of prices(el)) countReset(p);
     }
-  });
-  $$(R).forEach((el) => {
-    el.dataset.reveal = '';
-    const bounds = el.getBoundingClientRect();
-    if (bounds.top < innerHeight && bounds.bottom > 0) el.classList.add('in');
-    io.observe(el); reset.observe(el);
-  });
+  }
+});
+elements.forEach((el) => { el.dataset.reveal = ''; observer.observe(el); });
+const replay = (scope: Element = document.body) => {
+  let order = 0;
+  for (const el of elements) {
+    if (!scope.contains(el) && el !== scope) continue;
+    // Re-observe after a filter change so stale hidden-panel entries cannot win.
+    observer.unobserve(el);
+    inside.delete(el);
+    stop(el);
+    if (isVisible(el)) { inside.add(el); play(el, order++); }
+    observer.observe(el);
+  }
+};
+document.addEventListener('kontur:reveal', (event) => {
+  const scope = (event as CustomEvent<{ scope: Element }>).detail?.scope;
+  if (scope) replay(scope);
+});
+window.addEventListener('pageshow', (event) => { if (event.persisted) replay(); });
+reduced.addEventListener('change', () => {
+  if (reduced.matches) for (const el of running.keys()) stop(el);
+  else replay();
+});
 
-  // ---------- Шапка: прячется вниз / появляется вверх; прогресс скролла ----------
-  const header = document.querySelector<HTMLElement>('.site-header');
-  const bar = document.querySelector<HTMLElement>('.scroll-progress');
-  const cssProgress = CSS.supports('animation-timeline: scroll()');
-  let lastY = scrollY, ticking = false;
-  on(window, 'scroll', () => {
-    if (ticking) return;
-    ticking = true;
+// Desktop header stays steady; the mobile header scrolls away with the document.
+const bar = document.querySelector<HTMLElement>('.scroll-progress');
+if (bar && !CSS.supports('animation-timeline: scroll()')) {
+  let scheduled = false;
+  window.addEventListener('scroll', () => {
+    if (scheduled) return;
+    scheduled = true;
     requestAnimationFrame(() => {
-      const y = scrollY;
-      if (header) {
-        const busy = header.matches(':focus-within') || !!header.querySelector('details[open]');
-        if (y > lastY + 6 && y > 240 && !busy) header.classList.add('is-hidden');
-        else if (y < lastY - 6 || y < 120) header.classList.remove('is-hidden');
-      }
-      if (bar && !cssProgress) bar.style.setProperty('--sp', String(y / Math.max(1, root.scrollHeight - innerHeight)));
-      lastY = y;
-      ticking = false;
+      bar.style.setProperty('--sp', String(scrollY / Math.max(1, root.scrollHeight - innerHeight)));
+      scheduled = false;
     });
-  });
-
+  }, { passive: true });
 }

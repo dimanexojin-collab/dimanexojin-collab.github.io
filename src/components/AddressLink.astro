@@ -1,0 +1,10 @@
+---
+import { SITE } from '../config/site.ts';
+interface Props { cityFirst?: boolean; multiline?: boolean; class?: string }
+const { cityFirst = false, multiline = false, class: cls } = Astro.props;
+const first = cityFirst ? SITE.address.locality : SITE.address.street;
+const second = cityFirst ? SITE.address.street : SITE.address.locality;
+---
+<a class:list={['address-link', cls]} href={SITE.twoGisUrl} target="_blank" rel="noopener" aria-label={`${SITE.address.locality}, ${SITE.address.street} — открыть в 2ГИС`}>
+  {first}{multiline ? <br /> : cityFirst ? ' / ' : ', '}{second}<span class="address-link__arrow" aria-hidden="true"> ↗</span>
+</a>

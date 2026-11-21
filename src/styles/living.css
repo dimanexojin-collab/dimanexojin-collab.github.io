@@ -72,7 +72,6 @@
 .card:not(.trial-banner) { transition:translate .35s,background-color .3s,border-color .3s; }
 @media (hover:hover) and (pointer:fine) {
   .card:not(.trial-banner):hover { transform:none; translate:0 -5px; }
-  .card[data-reveal]:not(.in):hover { translate:0 16px; }
   .service-card:hover .service-card__visual svg { transform:translateY(-6px) rotate(-5deg); }
   .btn:hover { transform:translateY(-2px); }
   .mobile-nav__pages a:hover { translate:3px 0; }
@@ -89,4 +88,60 @@ html[data-motion-paused] .living-background *,html[data-motion-paused] .sunlit-h
 @media (prefers-reduced-motion:reduce) {
   *,*::before,*::after { animation:none!important; transition:none!important; }
   .sunlit-hero__wordmark,.sunlit-hero__copy,.sunlit-hero__note { opacity:1; }
+}
+
+/* Stable, replayable section motion; observed boxes never disappear off-screen. */
+.address-link { text-decoration-thickness:1px; text-underline-offset:4px; }
+.address-link__arrow { display:inline; font-size:.85em; white-space:nowrap; }
+.sunlit-hero__eyebrow > .address-link { max-width:50%; text-align:right; }
+.ribbon__track.is-native { overflow-x:auto; scroll-snap-type:none; scroll-behavior:auto; perspective:none; touch-action:pan-x pan-y; overscroll-behavior-x:contain; }
+.ribbon__track.is-native > li { will-change:auto; }
+.ribbon__track.is-native { cursor:grab; }
+.ribbon__track.is-native.is-dragging { cursor:grabbing; }
+.card h3 a::after,.promo__title a::after { z-index:1; }
+.card .btn { position:relative; z-index:2; }
+.price-tabs__filters .btn[aria-pressed='true'],.price-tabs__filters .btn[aria-pressed='true']:hover { background:var(--graphite); color:var(--bg); border-color:var(--graphite); }
+.ribbon__range { touch-action:pan-y; }
+.home-services { position:relative; isolation:isolate; }
+.home-services > :not(.procedure-atmosphere) { position:relative; z-index:1; }
+.procedure-atmosphere { position:absolute; inset:0; z-index:0; overflow:clip; pointer-events:none; }
+.procedure-atmosphere svg { position:absolute; top:0; right:-110px; width:600px; height:440px; stroke:#b99370; stroke-width:1; opacity:.45; }
+.procedure-atmosphere__flow { transform-origin:50% 50%; animation:procedure-flow 17s ease-in-out infinite alternate; }
+.procedure-atmosphere__glint { stroke:#a76f3f; stroke-width:1.8; stroke-dasharray:10 90; animation:procedure-glint 14s linear infinite; }
+.procedure-atmosphere__wash { position:absolute; width:640px; height:560px; top:-80px; right:-100px; border-radius:50%; background:radial-gradient(ellipse,#efc18a66,transparent 66%); animation:procedure-wash 16s ease-in-out infinite alternate; }
+@keyframes procedure-flow { from { transform:translate(-18px,-8px) rotate(-6deg); } to { transform:translate(30px,20px) rotate(8deg); } }
+@keyframes procedure-glint { to { stroke-dashoffset:-100; } }
+@keyframes procedure-wash { from { transform:translate(-40px,0) scale(.9); } to { transform:translate(80px,60px) scale(1.1); } }
+.home-services:not(.motion-active) .procedure-atmosphere * { animation-play-state:paused; }
+.home-services .service-card__visual svg { animation:service-breathe 7s ease-in-out infinite paused; }
+.home-services .service-card.in .service-card__visual svg { animation-play-state:running; }
+.home-services .service-card:nth-child(3n+2) .service-card__visual svg { animation-delay:-2.3s; }
+.home-services .service-card:nth-child(3n) .service-card__visual svg { animation-delay:-4.6s; }
+@keyframes service-breathe { 0%,100% { transform:translateY(0) rotate(-2deg); } 50% { transform:translateY(-5px) rotate(2deg); } }
+.living-background__veil { position:absolute; inset:-15% -60%; background:linear-gradient(115deg,transparent 30%,#f6d4a43b 44%,#fff9df70 51%,transparent 66%); animation:daylight-veil 34s ease-in-out infinite alternate; }
+@keyframes daylight-veil { from { transform:translateX(-14%) rotate(-6deg); } to { transform:translateX(14%) rotate(6deg); } }
+html[data-motion-paused] .procedure-atmosphere *,html[data-motion-paused] .service-card__visual svg { animation-play-state:paused; }
+@media (hover:hover) and (pointer:fine) {
+  .home-services .service-card:hover .service-card__visual svg { animation-play-state:paused; rotate:-5deg; }
+}
+@media (max-width:1179px) {
+  /* Let the compact header leave the viewport instead of tracking every swipe. */
+  .site-header { position:relative; top:auto; translate:none!important; transition:none; }
+  html { scroll-padding-top:20px; }
+}
+@media (max-width:767px) {
+  .sunlit-hero__eyebrow > .address-link { max-width:150px; }
+  .sunlit-hero__eyebrow .address-link__arrow { display:none; }
+  .procedure-atmosphere svg { width:360px; height:290px; right:-150px; top:0; opacity:.4; }
+  .procedure-atmosphere__wash { width:420px; height:400px; right:-180px; top:0; }
+  .living-background__light { width:75svmax; height:75svmax; }
+  .living-background__contour { width:110svmax; height:110svmax; stroke-width:1.15; }
+  .living-background__light--one { top:-40svmax; right:-30svmax; }
+  .living-background__contour--one { top:-26svmax; right:-42svmax; }
+  .living-background__veil { animation-duration:42s; }
+  .home-services .service-card__visual svg { animation-duration:9s; }
+  .price-tabs__filters { flex-wrap:nowrap; overflow-x:auto; padding:6px 0 10px; scrollbar-width:thin; scrollbar-color:var(--silver) transparent; }
+  .price-tabs__filters .btn { flex:none; }
+  .price-tabs__filters::-webkit-scrollbar { height:4px; }
+  .price-tabs__filters::-webkit-scrollbar-thumb { background:var(--silver); border-radius:4px; }
 }

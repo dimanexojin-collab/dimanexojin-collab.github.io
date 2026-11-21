@@ -1,4 +1,5 @@
 ---
+import AddressLink from '../components/AddressLink.astro';
 import Page from '../layouts/Page.astro';
 import ContactButtons from '../components/ContactButtons.astro';
 import MapEmbed from '../components/MapEmbed.astro';
@@ -12,7 +13,6 @@ const address = filled(SITE.address.street);
 const description = fitDescription(
   `Контакты студии «${SITE.name}»${inCity()}${address ? `: ${address}` : ''}. Телефон, ВКонтакте, график работы и схема проезда. Запись на процедуры и консультацию.`,
 );
-const a = SITE.address;
 const hoursTodo = SITE.hours.some((h) => isTodo(h.open) || isTodo(h.close));
 ---
 <Page
@@ -25,10 +25,7 @@ const hoursTodo = SITE.hours.some((h) => isTodo(h.open) || isTodo(h.close));
   <section class="section" aria-labelledby="nap-title">
     <h2 id="nap-title">Адрес и телефон</h2>
     <address>
-      <p>
-        <span class:list={[{ todo: isTodo(a.street) }]}>{a.street}</span>,
-        <span class:list={[{ todo: isTodo(a.locality) }]}>{a.locality}</span>
-      </p>
+      <p><AddressLink /></p>
       <p><a href={SITE.phoneHref}><span class:list={[{ todo: isTodo(SITE.phone) }]}>{SITE.phone}</span></a></p>
       {!isTodo(SITE.email) && <p><a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>}
     </address>
