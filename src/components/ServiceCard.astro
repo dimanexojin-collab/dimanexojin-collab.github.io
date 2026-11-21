@@ -23,6 +23,6 @@ const from = serviceFromPrice(page);
   <p>{page.summary}</p>
   <p class="service-card__meta">
     <span class="muted">{formatMinutes(list.map((s) => s.minutes))}</span> ·
-    <span class="price">от {formatPrice(from)}{page.priceMode === 'perSession' && ' за сеанс'}</span>
+    <span class="price" data-price={from}>от {formatPrice(from)}{page.priceMode === 'perSession' && ' за сеанс'}</span>
   </p>
 </article>
